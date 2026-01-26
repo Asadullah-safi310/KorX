@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import axiosInstance from '../../../api/axiosInstance';
 import { useThemeColor } from '../../../hooks/useThemeColor';
 import ScreenLayout from '../../../components/ScreenLayout';
+import { AppText } from '../../../components/AppText';
 
 
 const ForgotPasswordScreen = () => {
@@ -111,13 +112,13 @@ const ForgotPasswordScreen = () => {
         return (
           <View style={styles.stepContent}>
             <View style={styles.stepHeader}>
-              <Text style={[styles.stepTitle, { color: themeColors.text }]}>Find Your Account</Text>
-              <Text style={[styles.stepDescription, { color: themeColors.subtext }]}>
+              <AppText variant="h2" weight="bold">Find Your Account</AppText>
+              <AppText variant="body" color={themeColors.subtext}>
                 Enter your phone number or username associated with your account.
-              </Text>
+              </AppText>
             </View>
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: themeColors.text }]}>Phone or Username</Text>
+              <AppText variant="small" weight="bold" style={{ marginLeft: 4 }}>Phone or Username</AppText>
               <View style={[styles.inputWrapper, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
                 <Ionicons name="person-outline" size={20} color={themeColors.subtext} style={styles.inputIcon} />
                 <TextInput
@@ -139,7 +140,7 @@ const ForgotPasswordScreen = () => {
                 <ActivityIndicator color="#fff" />
               ) : (
                 <>
-                  <Text style={styles.primaryButtonText}>Continue</Text>
+                  <AppText weight="bold" color="#fff">Continue</AppText>
                   <Ionicons name="arrow-forward" size={20} color="#fff" style={styles.buttonIcon} />
                 </>
               )}
@@ -151,17 +152,17 @@ const ForgotPasswordScreen = () => {
           <View style={styles.stepContent}>
             <TouchableOpacity onPress={() => setStep(1)} style={styles.backLink}>
               <Ionicons name="arrow-back" size={16} color={themeColors.primary} />
-              <Text style={[styles.backLinkText, { color: themeColors.primary }]}>Back to identification</Text>
+              <AppText variant="small" weight="bold" color={themeColors.primary} style={{ marginLeft: 6 }}>Back to identification</AppText>
             </TouchableOpacity>
             <View style={styles.stepHeader}>
-              <Text style={[styles.stepTitle, { color: themeColors.text }]}>Confirm Email</Text>
-              <Text style={[styles.stepDescription, { color: themeColors.subtext }]}>
+              <AppText variant="h2" weight="bold">Confirm Email</AppText>
+              <AppText variant="body" color={themeColors.subtext}>
                 Confirm the email you provided in your profile settings: {'\n'}
-                <Text style={[styles.highlight, { color: themeColors.text }]}>{maskedEmail}</Text>
-              </Text>
+                <AppText weight="bold" color={themeColors.text}>{maskedEmail}</AppText>
+              </AppText>
             </View>
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: themeColors.text }]}>Email Address</Text>
+              <AppText variant="small" weight="bold" style={{ marginLeft: 4 }}>Email Address</AppText>
               <View style={[styles.inputWrapper, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
                 <Ionicons name="mail-outline" size={20} color={themeColors.subtext} style={styles.inputIcon} />
                 <TextInput
@@ -184,7 +185,7 @@ const ForgotPasswordScreen = () => {
                 <ActivityIndicator color="#fff" />
               ) : (
                 <>
-                  <Text style={styles.primaryButtonText}>Send Code</Text>
+                  <AppText weight="bold" color="#fff">Send Code</AppText>
                   <Ionicons name="paper-plane-outline" size={20} color="#fff" style={styles.buttonIcon} />
                 </>
               )}
@@ -195,13 +196,13 @@ const ForgotPasswordScreen = () => {
         return (
           <View style={styles.stepContent}>
             <View style={styles.stepHeader}>
-              <Text style={[styles.stepTitle, { color: themeColors.text }]}>Enter Code</Text>
-              <Text style={[styles.stepDescription, { color: themeColors.subtext }]}>
+              <AppText variant="h2" weight="bold">Enter Code</AppText>
+              <AppText variant="body" color={themeColors.subtext}>
                 Enter the 6-digit verification code sent to your email.
-              </Text>
+              </AppText>
             </View>
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: themeColors.text }]}>Verification Code</Text>
+              <AppText variant="small" weight="bold" style={{ marginLeft: 4 }}>Verification Code</AppText>
               <TextInput
                 style={[styles.otpInput, { color: themeColors.text, backgroundColor: themeColors.card, borderColor: themeColors.border }]}
                 placeholder="000000"
@@ -221,7 +222,7 @@ const ForgotPasswordScreen = () => {
                 <ActivityIndicator color="#fff" />
               ) : (
                 <>
-                  <Text style={styles.primaryButtonText}>Verify Code</Text>
+                  <AppText weight="bold" color="#fff">Verify Code</AppText>
                   <Ionicons name="shield-checkmark-outline" size={20} color="#fff" style={styles.buttonIcon} />
                 </>
               )}
@@ -231,9 +232,13 @@ const ForgotPasswordScreen = () => {
               onPress={handleSendCode} 
               disabled={timer > 0 || loading}
             >
-              <Text style={[styles.resendText, { color: themeColors.primary }, timer > 0 && { color: themeColors.subtext }]}>
+              <AppText 
+                variant="small" 
+                weight="bold" 
+                color={timer > 0 ? themeColors.subtext : themeColors.primary}
+              >
                 {timer > 0 ? `Resend code in ${timer}s` : 'Resend code'}
-              </Text>
+              </AppText>
             </TouchableOpacity>
           </View>
         );
@@ -241,13 +246,13 @@ const ForgotPasswordScreen = () => {
         return (
           <View style={styles.stepContent}>
             <View style={styles.stepHeader}>
-              <Text style={[styles.stepTitle, { color: themeColors.text }]}>New Password</Text>
-              <Text style={[styles.stepDescription, { color: themeColors.subtext }]}>
+              <AppText variant="h2" weight="bold">New Password</AppText>
+              <AppText variant="body" color={themeColors.subtext}>
                 Create a strong password to protect your account.
-              </Text>
+              </AppText>
             </View>
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: themeColors.text }]}>New Password</Text>
+              <AppText variant="small" weight="bold" style={{ marginLeft: 4 }}>New Password</AppText>
               <View style={[styles.inputWrapper, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
                 <Ionicons name="lock-closed-outline" size={20} color={themeColors.subtext} style={styles.inputIcon} />
                 <TextInput
@@ -261,7 +266,7 @@ const ForgotPasswordScreen = () => {
               </View>
             </View>
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: themeColors.text }]}>Confirm New Password</Text>
+              <AppText variant="small" weight="bold" style={{ marginLeft: 4 }}>Confirm New Password</AppText>
               <View style={[styles.inputWrapper, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
                 <Ionicons name="lock-closed-outline" size={20} color={themeColors.subtext} style={styles.inputIcon} />
                 <TextInput
@@ -283,7 +288,7 @@ const ForgotPasswordScreen = () => {
                 <ActivityIndicator color="#fff" />
               ) : (
                 <>
-                  <Text style={styles.primaryButtonText}>Reset Password</Text>
+                  <AppText weight="bold" color="#fff">Reset Password</AppText>
                   <Ionicons name="checkmark-circle-outline" size={20} color="#fff" style={styles.buttonIcon} />
                 </>
               )}
@@ -306,7 +311,7 @@ const ForgotPasswordScreen = () => {
         <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
           <Ionicons name="close" size={24} color={themeColors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: themeColors.text }]}>Password Recovery</Text>
+        <AppText variant="title" weight="bold">Password Recovery</AppText>
       </View>
 
       <View style={styles.content}>
@@ -325,16 +330,16 @@ const ForgotPasswordScreen = () => {
         {error ? (
           <View style={[styles.errorContainer, { backgroundColor: themeColors.danger + '10', borderColor: themeColors.danger + '30' }]}>
             <Ionicons name="alert-circle" size={20} color={themeColors.danger} />
-            <Text style={[styles.errorText, { color: themeColors.danger }]}>{error}</Text>
+            <AppText variant="small" weight="medium" color={themeColors.danger} style={{ flex: 1 }}>{error}</AppText>
           </View>
         ) : null}
 
         {renderStep()}
 
         <View style={styles.footer}>
-          <Text style={[styles.footerText, { color: themeColors.subtext }]}>Remembered your password? </Text>
+          <AppText variant="small" color={themeColors.subtext}>Remembered your password? </AppText>
           <TouchableOpacity onPress={() => router.replace('/(auth)/login')}>
-            <Text style={[styles.linkText, { color: themeColors.primary }]}>Sign In</Text>
+            <AppText variant="small" weight="bold" color={themeColors.primary}>Sign In</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -356,10 +361,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
   },
   content: {
     paddingHorizontal: 24,
@@ -384,47 +385,14 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 24,
   },
-  errorText: {
-    fontSize: 14,
-    fontWeight: '500',
-    flex: 1,
-  },
   stepContent: {
     gap: 24,
   },
   stepHeader: {
     gap: 8,
   },
-  stepTitle: {
-    fontSize: 24,
-    fontWeight: '800',
-    letterSpacing: -0.5,
-  },
-  stepDescription: {
-    fontSize: 15,
-    lineHeight: 22,
-    opacity: 0.8,
-  },
-  backLink: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginBottom: -8,
-  },
-  backLinkText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
   inputGroup: {
     gap: 8,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginLeft: 4,
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -464,11 +432,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
-  primaryButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
-  },
   buttonIcon: {
     marginLeft: 8,
   },
@@ -476,23 +439,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 8,
   },
-  resendText: {
-    fontSize: 14,
-    fontWeight: '600',
+  backLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: -8,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 40,
     paddingBottom: 20,
-  },
-  footerText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  linkText: {
-    fontSize: 14,
-    fontWeight: '700',
   },
 });
 

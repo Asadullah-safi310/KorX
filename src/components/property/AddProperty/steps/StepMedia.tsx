@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { 
   View, 
-  Text, 
   StyleSheet, 
   TouchableOpacity, 
   Image, 
@@ -17,6 +16,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useThemeColor } from '../../../../hooks/useThemeColor';
 import { validateFileSize, getFileTypeCategory, getImageUrl } from '../../../../utils/mediaUtils';
+import AppText from '../../../common/AppText';
 
 const { width } = Dimensions.get('window');
 const GRID_SPACING = 12;
@@ -135,7 +135,7 @@ const StepMedia = () => {
               size={32} 
               color={theme.primary} 
             />
-            <Text style={[styles.fileName, { color: theme.text }]} numberOfLines={1}>{item.name}</Text>
+            <AppText variant="tiny" fontWeight="600" style={[{ color: theme.text }, styles.fileName]} numberOfLines={1}>{item.name}</AppText>
           </View>
         )}
         
@@ -160,10 +160,10 @@ const StepMedia = () => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-      <Text style={[styles.sectionTitle, { color: theme.text }]}>Visual Assets</Text>
-      <Text style={[styles.sectionSubtitle, { color: theme.subtext }]}>
+      <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Visual Assets</AppText>
+      <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
         Properties with 5+ high-quality photos get 3x more inquiries.
-      </Text>
+      </AppText>
 
       <View style={styles.uploadCards}>
         <TouchableOpacity 
@@ -174,8 +174,8 @@ const StepMedia = () => {
           <View style={[styles.uploadIconCircle, { backgroundColor: theme.primary }]}>
             <Ionicons name="camera" size={28} color="#fff" />
           </View>
-          <Text style={[styles.uploadTitle, { color: theme.text }]}>Add Property Photos</Text>
-          <Text style={[styles.uploadSub, { color: theme.subtext }]}>Upload up to 15 images</Text>
+          <AppText variant="title" fontWeight="700" style={{ color: theme.text }}>Add Property Photos</AppText>
+          <AppText variant="caption" fontWeight="500" style={{ color: theme.subtext }}>Upload up to 15 images</AppText>
         </TouchableOpacity>
         
         <View style={styles.secondaryUploads}>
@@ -185,7 +185,7 @@ const StepMedia = () => {
             activeOpacity={0.7}
           >
             <Ionicons name="videocam-outline" size={24} color={theme.primary} />
-            <Text style={[styles.smallUploadText, { color: theme.text }]}>Add Video</Text>
+            <AppText variant="tiny" fontWeight="600" style={{ color: theme.text }}>Add Video</AppText>
           </TouchableOpacity>
           
           <TouchableOpacity 
@@ -194,7 +194,7 @@ const StepMedia = () => {
             activeOpacity={0.7}
           >
             <Ionicons name="document-attach-outline" size={24} color={theme.primary} />
-            <Text style={[styles.smallUploadText, { color: theme.text }]}>Documents</Text>
+            <AppText variant="tiny" fontWeight="600" style={{ color: theme.text }}>Documents</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -202,7 +202,7 @@ const StepMedia = () => {
       {loading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator color={theme.primary} />
-          <Text style={[styles.loadingText, { color: theme.subtext }]}>Processing files...</Text>
+          <AppText variant="caption" fontWeight="500" style={{ color: theme.subtext }}>Processing files...</AppText>
         </View>
       )}
 
@@ -213,14 +213,14 @@ const StepMedia = () => {
         {(!values.existingMedia?.length && !values.media?.length) && (
           <View style={[styles.emptyGrid, { backgroundColor: theme.border + '10' }]}>
             <MaterialCommunityIcons name="image-multiple-outline" size={40} color={theme.border} />
-            <Text style={[styles.emptyGridText, { color: theme.subtext }]}>No media added yet</Text>
+            <AppText variant="caption" fontWeight="600" style={{ color: theme.subtext }}>No media added yet</AppText>
           </View>
         )}
       </View>
 
       {touched.media && errors.media && (
         <View style={[styles.errorBox, { backgroundColor: theme.danger + '10' }]}>
-          <Text style={[styles.errorText, { color: theme.danger }]}>{errors.media as string}</Text>
+          <AppText variant="caption" fontWeight="600" style={{ color: theme.danger }}>{errors.media as string}</AppText>
         </View>
       )}
     </ScrollView>
@@ -234,12 +234,9 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   sectionTitle: { 
-    fontSize: 20, 
-    fontWeight: '800',
     letterSpacing: -0.5,
   },
   sectionSubtitle: { 
-    fontSize: 14, 
     marginBottom: 24,
     marginTop: 2,
   },
@@ -268,12 +265,8 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   uploadTitle: {
-    fontSize: 17,
-    fontWeight: '700',
   },
   uploadSub: {
-    fontSize: 13,
-    fontWeight: '500',
   },
   secondaryUploads: {
     flexDirection: 'row',
@@ -289,8 +282,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   smallUploadText: {
-    fontSize: 13,
-    fontWeight: '600',
   },
   loadingContainer: {
     flexDirection: 'row',
@@ -300,8 +291,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   loadingText: {
-    fontSize: 14,
-    fontWeight: '500',
   },
   mediaGrid: { 
     flexDirection: 'row', 
@@ -334,7 +323,6 @@ const styles = StyleSheet.create({
   },
   fileName: { 
     fontSize: 10, 
-    fontWeight: '600',
     marginTop: 6, 
     textAlign: 'center',
   },
@@ -372,8 +360,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   emptyGridText: {
-    fontSize: 14,
-    fontWeight: '600',
   },
   errorBox: {
     marginTop: 20,
@@ -382,8 +368,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   errorText: { 
-    fontSize: 13, 
-    fontWeight: '600',
   },
 });
 

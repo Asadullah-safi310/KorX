@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Pressable, FlatList, Dimensions, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, Pressable, FlatList, Dimensions, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { getImageUrl } from '../utils/mediaUtils';
 import Animated, { 
@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useThemeColor } from '../hooks/useThemeColor';
+import { AppText } from './AppText';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const DefaultPropertyImage = require('../../assets/images/property.jpg');
@@ -156,12 +157,12 @@ const PropertyCard = ({ property, onPress, index = 0, variant = 'default' }: Pro
             <View style={styles.compactBadgeRow}>
               {isSale && (
                 <View style={[styles.compactTag, { backgroundColor: '#e0f2ff' }]}> 
-                  <Text style={[styles.compactTagText, { color: '#0369a1' }]}>For Sale</Text>
+                  <AppText variant="caption" weight="bold" color="#0369a1">For Sale</AppText>
                 </View>
               )}
               {isRent && (
                 <View style={[styles.compactTag, { backgroundColor: '#ecfccb' }]}> 
-                  <Text style={[styles.compactTagText, { color: '#166534' }]}>For Rent</Text>
+                  <AppText variant="caption" weight="bold" color="#166534">For Rent</AppText>
                 </View>
               )}
             </View>
@@ -175,27 +176,27 @@ const PropertyCard = ({ property, onPress, index = 0, variant = 'default' }: Pro
 
           <View style={styles.compactBody}>
             <View style={styles.compactHeaderRow}>
-              <Text style={[styles.compactTitle, { color: themeColors.text }]} numberOfLines={1}>
+              <AppText variant="title" weight="bold" numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
                 {locationLabel}
-              </Text>
+              </AppText>
               <View style={[styles.compactTypeBadge, { backgroundColor: themeColors.background }]}> 
-                <Text style={[styles.compactTypeText, { color: themeColors.subtext }]} numberOfLines={1}>
+                <AppText variant="caption" weight="bold" color={themeColors.subtext} numberOfLines={1}>
                   {typeLabel}
-                </Text>
+                </AppText>
               </View>
             </View>
-            <Text style={[styles.compactPrice, { color: themeColors.primary }]} numberOfLines={1}>
+            <AppText variant="h3" weight="bold" color={themeColors.primary} numberOfLines={1} style={{ marginBottom: 10 }}>
               {displayPrice}
-            </Text>
+            </AppText>
             <View style={styles.compactMetaRow}>
               <View style={styles.compactMetaItem}>
                 <Ionicons name="bed-outline" size={14} color={themeColors.subtext} />
-                <Text style={[styles.compactMetaText, { color: themeColors.text }]}>{bedLabel} BHK</Text>
+                <AppText variant="small" weight="medium">{bedLabel} BHK</AppText>
               </View>
               <View style={[styles.compactSeparator, { backgroundColor: themeColors.border }]} />
               <View style={styles.compactMetaItem}>
                 <MaterialCommunityIcons name="vector-square" size={14} color={themeColors.subtext} />
-                <Text style={[styles.compactMetaText, { color: themeColors.text }]}>{areaLabel} sqft</Text>
+                <AppText variant="small" weight="medium">{areaLabel} sqft</AppText>
               </View>
             </View>
           </View>
@@ -241,7 +242,7 @@ const PropertyCard = ({ property, onPress, index = 0, variant = 'default' }: Pro
 
           {photos.length > 1 && (
             <View style={styles.imageCountBadge}>
-              <Text style={styles.imageCountText}>{activeIndex + 1}/{photos.length}</Text>
+              <AppText variant="caption" weight="bold" color="#fff">{activeIndex + 1}/{photos.length}</AppText>
             </View>
           )}
 
@@ -259,42 +260,39 @@ const PropertyCard = ({ property, onPress, index = 0, variant = 'default' }: Pro
         <View style={styles.infoSection}>
           <View style={styles.priceRow}>
             <View style={styles.priceContainer}>
-              <Text style={styles.price} numberOfLines={1}> 
+              <AppText variant="h3" weight="bold" numberOfLines={1}> 
                 {isSale ? formatPrice(property.sale_price) : formatPrice(property.rent_price)}
-                <Text style={styles.priceSubText}>
-                  <Text style={{ fontSize: 14, color: '#94a3b8' }}> / </Text>
-                  {isRent && !isSale ? 'mo' : 'yr'}
-                </Text>
-              </Text>
+                <AppText variant="small" color="#94a3b8"> / {isRent && !isSale ? 'mo' : 'yr'}</AppText>
+              </AppText>
             </View>
             <View style={styles.ratingContainer}>
               <Ionicons name="star" size={16} color="#fbbf24" />
-              <Text style={styles.ratingText}>4.0</Text>
+              <AppText variant="small" weight="bold" style={{ marginLeft: 4 }}>4.0</AppText>
             </View>
           </View>
 
           <View style={styles.titleRow}>
-            <Text style={styles.title} numberOfLines={1}>
+            <AppText variant="title" weight="bold" numberOfLines={1} style={{ flex: 1, marginRight: 12 }}>
               {propertyTitle}
-            </Text>
+            </AppText>
             
             <View style={styles.featureRow}>
               <View style={styles.featureItem}>
                 <Ionicons name="bed-outline" size={18} color="#94a3b8" />
-                <Text style={styles.featureText}>{property.bedrooms || 0}</Text>
+                <AppText variant="body" weight="medium" style={{ marginLeft: 6 }}>{property.bedrooms || 0}</AppText>
               </View>
               <View style={styles.featureItem}>
                 <MaterialCommunityIcons name="bathtub-outline" size={18} color="#94a3b8" />
-                <Text style={styles.featureText}>{property.bathrooms || 0}</Text>
+                <AppText variant="body" weight="medium" style={{ marginLeft: 6 }}>{property.bathrooms || 0}</AppText>
               </View>
             </View>
           </View>
           
           <View style={styles.locationRow}>
             <Ionicons name="location-outline" size={18} color="#94a3b8" />
-            <Text style={styles.location} numberOfLines={1}>
+            <AppText variant="body" color={themeColors.subtext} numberOfLines={1} style={{ marginLeft: 6, flex: 1 }}>
               {fullAddress || 'Location details'}
-            </Text>
+            </AppText>
           </View>
         </View>
       </Pressable>

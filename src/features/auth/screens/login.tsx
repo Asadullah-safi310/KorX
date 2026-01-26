@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { BackHandler, View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { BackHandler, View, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import authStore from '../../../stores/AuthStore';
 import { useThemeColor } from '../../../hooks/useThemeColor';
 import ScreenLayout from '../../../components/ScreenLayout';
+import { AppText } from '../../../components/AppText';
 import { BlurView } from 'expo-blur';
 
 
@@ -56,7 +57,7 @@ const LoginScreen = observer(() => {
           onPress={() => router.replace('/(tabs)/dashboard')}
         >
           <BlurView intensity={20} tint="light" style={styles.skipBlur}>
-            <Text style={[styles.skipText, { color: themeColors.subtext }]}>Skip</Text>
+            <AppText variant="caption" weight="semiBold" color={themeColors.subtext} style={{ marginRight: 2 }}>Skip</AppText>
             <Ionicons name="chevron-forward" size={16} color={themeColors.subtext} />
           </BlurView>
         </TouchableOpacity>
@@ -67,20 +68,22 @@ const LoginScreen = observer(() => {
           <View style={[styles.logoContainer, { backgroundColor: themeColors.primary + '10' }]}>
             <Ionicons name="home" size={40} color={themeColors.primary} />
           </View>
-          <Text style={[styles.title, { color: themeColors.text }]}>Welcome Back</Text>
-          <Text style={[styles.subtitle, { color: themeColors.subtext }]}>Sign in to your premium real estate account</Text>
+          <AppText variant="h1" weight="bold">Welcome Back</AppText>
+          <AppText variant="body" color={themeColors.subtext} style={{ textAlign: 'center', opacity: 0.8, paddingHorizontal: 20 }}>
+            Sign in to your premium real estate account
+          </AppText>
         </View>
 
         <View style={styles.form}>
           {error ? (
             <View style={[styles.errorContainer, { backgroundColor: themeColors.danger + '10', borderColor: themeColors.danger + '30' }]}>
               <Ionicons name="alert-circle" size={20} color={themeColors.danger} />
-              <Text style={[styles.errorText, { color: themeColors.danger }]}>{error}</Text>
+              <AppText variant="small" weight="medium" color={themeColors.danger} style={{ flex: 1 }}>{error}</AppText>
             </View>
           ) : null}
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: themeColors.text }]}>Phone Number</Text>
+            <AppText variant="small" weight="bold" style={{ marginLeft: 4, marginBottom: 8 }}>Phone Number</AppText>
             <View style={[styles.inputWrapper, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
               <Ionicons name="call-outline" size={20} color={themeColors.subtext} style={styles.inputIcon} />
               <TextInput
@@ -96,7 +99,7 @@ const LoginScreen = observer(() => {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: themeColors.text }]}>Password</Text>
+            <AppText variant="small" weight="bold" style={{ marginLeft: 4, marginBottom: 8 }}>Password</AppText>
             <View style={[styles.inputWrapper, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
               <Ionicons name="lock-closed-outline" size={20} color={themeColors.subtext} style={styles.inputIcon} />
               <TextInput
@@ -121,7 +124,7 @@ const LoginScreen = observer(() => {
             style={styles.forgotPassword}
             onPress={() => router.push('/(auth)/forgot-password')}
           >
-            <Text style={[styles.forgotPasswordText, { color: themeColors.primary }]}>Forgot password?</Text>
+            <AppText variant="small" weight="bold" color={themeColors.primary}>Forgot password?</AppText>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -133,16 +136,16 @@ const LoginScreen = observer(() => {
               <ActivityIndicator color="#fff" />
             ) : (
               <>
-                <Text style={styles.loginButtonText}>Sign In</Text>
+                <AppText weight="bold" color="#fff">Sign In</AppText>
                 <Ionicons name="arrow-forward" size={20} color="#fff" style={styles.buttonIcon} />
               </>
             )}
           </TouchableOpacity>
 
           <View style={styles.footer}>
-            <Text style={[styles.footerText, { color: themeColors.subtext }]}>Don&apos;t have an account? </Text>
+            <AppText variant="small" color={themeColors.subtext}>Don&apos;t have an account? </AppText>
             <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
-              <Text style={[styles.linkText, { color: themeColors.primary }]}>Create account</Text>
+              <AppText variant="small" weight="bold" color={themeColors.primary}>Create account</AppText>
             </TouchableOpacity>
           </View>
         </View>
@@ -168,11 +171,6 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
   },
-  skipText: {
-    fontSize: 13,
-    fontWeight: '600',
-    marginRight: 2,
-  },
   content: {
     paddingHorizontal: 24,
     paddingTop: 20,
@@ -189,18 +187,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '800',
-    letterSpacing: -0.5,
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 15,
-    textAlign: 'center',
-    opacity: 0.8,
-    paddingHorizontal: 20,
-  },
   form: {
     gap: 20,
   },
@@ -212,18 +198,8 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     gap: 10,
   },
-  errorText: {
-    fontSize: 14,
-    fontWeight: '500',
-    flex: 1,
-  },
   inputGroup: {
     gap: 8,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginLeft: 4,
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -247,10 +223,6 @@ const styles = StyleSheet.create({
   forgotPassword: {
     alignSelf: 'flex-end',
   },
-  forgotPasswordText: {
-    fontSize: 14,
-    fontWeight: '700',
-  },
   loginButton: {
     height: 56,
     borderRadius: 20,
@@ -267,11 +239,6 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     opacity: 0.6,
   },
-  loginButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
-  },
   buttonIcon: {
     marginLeft: 8,
   },
@@ -280,14 +247,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 10,
     paddingBottom: 20,
-  },
-  footerText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  linkText: {
-    fontSize: 14,
-    fontWeight: '700',
   },
 });
 

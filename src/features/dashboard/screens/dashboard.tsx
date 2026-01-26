@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, RefreshControl, TouchableOpacity, Dimensions, ActivityIndicator, FlatList, ScrollView } from 'react-native';
+import { View, StyleSheet, RefreshControl, TouchableOpacity, Dimensions, ActivityIndicator, FlatList, ScrollView } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -9,6 +9,7 @@ import { adminService } from '../../../services/admin.service';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColor } from '../../../hooks/useThemeColor';
 import ScreenLayout from '../../../components/ScreenLayout';
+import { AppText } from '../../../components/AppText';
 import { Image } from 'expo-image';
 
 const { width } = Dimensions.get('window');
@@ -33,8 +34,8 @@ const StatCard = ({ icon, label, value, color }: any) => {
         {React.cloneElement(icon, { size: 20, color: color })}
       </View>
       <View style={styles.statInfo}>
-        <Text style={[styles.statValue, { color: themeColors.text }]}>{value}</Text>
-        <Text style={[styles.statLabel, { color: themeColors.subtext }]}>{label}</Text>
+        <AppText variant="title" weight="bold">{value}</AppText>
+        <AppText variant="caption" weight="medium" color={themeColors.subtext}>{label}</AppText>
       </View>
     </View>
   );
@@ -101,8 +102,8 @@ const AdminDashboard = observer(() => {
       <View style={[styles.premiumHeader, { paddingTop: insets.top + 10 }]}>
         <View style={styles.premiumHeaderTop}>
           <View>
-            <Text style={[styles.premiumGreeting, { color: themeColors.text }]}>Admin Console</Text>
-            <Text style={[styles.premiumSubtext, { color: themeColors.subtext }]}>System status: Operational</Text>
+            <AppText variant="h1" weight="bold" color={themeColors.text}>Admin Console</AppText>
+            <AppText variant="small" weight="medium" color={themeColors.subtext}>System status: Operational</AppText>
           </View>
           <TouchableOpacity 
             style={[styles.premiumProfileBtn, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}
@@ -114,25 +115,25 @@ const AdminDashboard = observer(() => {
 
         <View style={[styles.premiumStatsRow, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
           <View style={styles.premiumMetaItem}>
-            <Text style={[styles.premiumMetaValue, { color: themeColors.text }]}>{stats.totalUsers}</Text>
-            <Text style={[styles.premiumMetaLabel, { color: themeColors.subtext }]}>Users</Text>
+            <AppText variant="h3" weight="bold" color={themeColors.text}>{stats.totalUsers}</AppText>
+            <AppText variant="caption" weight="semiBold" color={themeColors.subtext} style={{ textTransform: 'uppercase' }}>Users</AppText>
           </View>
           <View style={[styles.premiumMetaDivider, { backgroundColor: themeColors.border }]} />
           <View style={styles.premiumMetaItem}>
-            <Text style={[styles.premiumMetaValue, { color: themeColors.text }]}>{stats.totalAgents || 0}</Text>
-            <Text style={[styles.premiumMetaLabel, { color: themeColors.subtext }]}>Agents</Text>
+            <AppText variant="h3" weight="bold" color={themeColors.text}>{stats.totalAgents || 0}</AppText>
+            <AppText variant="caption" weight="semiBold" color={themeColors.subtext} style={{ textTransform: 'uppercase' }}>Agents</AppText>
           </View>
           <View style={[styles.premiumMetaDivider, { backgroundColor: themeColors.border }]} />
           <View style={styles.premiumMetaItem}>
-            <Text style={[styles.premiumMetaValue, { color: themeColors.text }]}>{stats.totalDeals}</Text>
-            <Text style={[styles.premiumMetaLabel, { color: themeColors.subtext }]}>Deals</Text>
+            <AppText variant="h3" weight="bold" color={themeColors.text}>{stats.totalDeals}</AppText>
+            <AppText variant="caption" weight="semiBold" color={themeColors.subtext} style={{ textTransform: 'uppercase' }}>Deals</AppText>
           </View>
         </View>
       </View>
 
       <View style={styles.mainContent}>
         <View style={styles.sectionHeaderRow}>
-          <Text style={[styles.contentSectionTitle, { color: themeColors.text }]}>Global Statistics</Text>
+          <AppText variant="title" weight="bold" color={themeColors.text}>Global Statistics</AppText>
         </View>
         
         <View style={styles.statsGrid}>
@@ -163,7 +164,7 @@ const AdminDashboard = observer(() => {
         </View>
 
         <View style={[styles.sectionHeaderRow, { marginTop: 20 }]}>
-          <Text style={[styles.contentSectionTitle, { color: themeColors.text }]}>Management Tools</Text>
+          <AppText variant="title" weight="bold" color={themeColors.text}>Management Tools</AppText>
         </View>
         
         <View style={styles.adminToolGrid}>
@@ -174,8 +175,8 @@ const AdminDashboard = observer(() => {
             <View style={[styles.toolIconContainer, { backgroundColor: '#3b82f615' }]}>
               <Ionicons name="people" size={24} color="#3b82f6" />
             </View>
-            <Text style={[styles.toolTitle, { color: themeColors.text }]}>Users</Text>
-            <Text style={[styles.toolDesc, { color: themeColors.subtext }]}>Roles & permissions</Text>
+            <AppText variant="body" weight="bold" color={themeColors.text}>Users</AppText>
+            <AppText variant="caption" color={themeColors.subtext}>Roles & permissions</AppText>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -185,8 +186,8 @@ const AdminDashboard = observer(() => {
             <View style={[styles.toolIconContainer, { backgroundColor: '#10b98115' }]}>
               <Ionicons name="business" size={24} color="#10b981" />
             </View>
-            <Text style={[styles.toolTitle, { color: themeColors.text }]}>Properties</Text>
-            <Text style={[styles.toolDesc, { color: themeColors.subtext }]}>Review all listings</Text>
+            <AppText variant="body" weight="bold" color={themeColors.text}>Properties</AppText>
+            <AppText variant="caption" color={themeColors.subtext}>Review all listings</AppText>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -196,8 +197,8 @@ const AdminDashboard = observer(() => {
             <View style={[styles.toolIconContainer, { backgroundColor: '#f59e0b15' }]}>
               <Ionicons name="bar-chart" size={24} color="#f59e0b" />
             </View>
-            <Text style={[styles.toolTitle, { color: themeColors.text }]}>Insights</Text>
-            <Text style={[styles.toolDesc, { color: themeColors.subtext }]}>Analyze growth</Text>
+            <AppText variant="body" weight="bold" color={themeColors.text}>Insights</AppText>
+            <AppText variant="caption" color={themeColors.subtext}>Analyze growth</AppText>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -207,8 +208,8 @@ const AdminDashboard = observer(() => {
             <View style={[styles.toolIconContainer, { backgroundColor: '#8b5cf615' }]}>
               <Ionicons name="settings" size={24} color="#8b5cf6" />
             </View>
-            <Text style={[styles.toolTitle, { color: themeColors.text }]}>Settings</Text>
-            <Text style={[styles.toolDesc, { color: themeColors.subtext }]}>System platform</Text>
+            <AppText variant="body" weight="bold" color={themeColors.text}>Settings</AppText>
+            <AppText variant="caption" color={themeColors.subtext}>System platform</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -255,7 +256,7 @@ const UserDashboard = observer(() => {
     <View style={styles.bannerItem}>
       <Image source={{ uri: item }} style={styles.bannerImage} contentFit="cover" />
       <View style={styles.bannerOverlay}>
-        <Text style={styles.bannerText}>#KabTak{"\n"}Puchoge</Text>
+        <AppText weight="bold" style={styles.bannerText}>#KabTak{"\n"}Puchoge</AppText>
       </View>
     </View>
   );
@@ -282,10 +283,10 @@ const UserDashboard = observer(() => {
           />
           <View style={styles.cardTopTags}>
             <View style={styles.newLaunchTag}>
-              <Text style={styles.newLaunchText}>NEW LAUNCH</Text>
+              <AppText weight="bold" style={styles.newLaunchText}>NEW LAUNCH</AppText>
             </View>
             <View style={styles.reraBadgeSmall}>
-              <Text style={styles.reraTextSmall}>RERA</Text>
+              <AppText weight="bold" style={styles.reraTextSmall}>RERA</AppText>
             </View>
           </View>
           
@@ -296,28 +297,28 @@ const UserDashboard = observer(() => {
           <View style={styles.imageBottomOverlay}>
             <View style={styles.possessionTag}>
               <Ionicons name="time-outline" size={12} color="#fff" />
-              <Text style={styles.possessionTextSmall}>Possession {new Date().getFullYear() + 2}</Text>
+              <AppText variant="caption" color="#fff" style={{ fontSize: 10 }}>Possession {new Date().getFullYear() + 2}</AppText>
             </View>
           </View>
         </View>
 
         <View style={styles.featuredInfo}>
           <View style={styles.priceRowModern}>
-            <Text style={[styles.featuredPriceModern, { color: theme.text }]}>{price}</Text>
+            <AppText variant="h3" weight="bold" color={theme.text}>{price}</AppText>
             <View style={[styles.configBadge, { backgroundColor: theme.primary + '10' }]}>
-              <Text style={[styles.configText, { color: theme.primary }]}>{property.bedrooms} BHK</Text>
+              <AppText variant="caption" weight="bold" color={theme.primary} style={{ fontSize: 11 }}>{property.bedrooms} BHK</AppText>
             </View>
           </View>
           
-          <Text style={[styles.featuredTitleModern, { color: theme.text }]} numberOfLines={1}>
+          <AppText variant="body" weight="bold" color={theme.text} numberOfLines={1}>
             {property.title}
-          </Text>
+          </AppText>
           
           <View style={styles.locationRowModern}>
             <Ionicons name="location-sharp" size={14} color={theme.subtext} />
-            <Text style={[styles.featuredLocationModern, { color: theme.subtext }]} numberOfLines={1}>
+            <AppText variant="small" weight="medium" color={theme.subtext} numberOfLines={1} style={{ fontSize: 13 }}>
               {property.location || property.area_id || 'India'}
-            </Text>
+            </AppText>
           </View>
         </View>
       </TouchableOpacity>
@@ -373,9 +374,9 @@ const UserDashboard = observer(() => {
               activeOpacity={1}
               onPress={() => router.push('/search')}
             >
-              <Text style={[styles.searchInput, { color: '#333' }]}>
+              <AppText variant="body" weight="medium" color="#333" style={{ fontSize: 17 }}>
                 Search &quot;Noida&quot;
-              </Text>
+              </AppText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.micBtn}>
               <Ionicons name="mic-outline" size={24} color={themeColors.primary} />
@@ -389,14 +390,14 @@ const UserDashboard = observer(() => {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.modernRecentScroll}>
           <View style={styles.recentLabelContainer}>
             <MaterialCommunityIcons name="history" size={18} color={themeColors.subtext} />
-            <Text style={[styles.recentSearchLabel, { color: themeColors.subtext }]}>Recent{"\n"}Search</Text>
+            <AppText variant="caption" weight="bold" color={themeColors.subtext} style={{ lineHeight: 14 }}>Recent{"\n"}Search</AppText>
           </View>
           {RECENT_SEARCHES.map((search, index) => (
             <TouchableOpacity 
               key={index} 
               style={[styles.modernChip, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}
             >
-              <Text style={[styles.modernChipText, { color: themeColors.text }]}>{search}</Text>
+              <AppText variant="small" weight="semiBold" color={themeColors.text}>{search}</AppText>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -406,8 +407,8 @@ const UserDashboard = observer(() => {
       <View style={styles.projectsSection}>
         <View style={styles.sectionHeaderRow}>
           <View>
-            <Text style={[styles.projectsTitle, { color: '#001f3f' }]}>Projects in High Demand</Text>
-            <Text style={[styles.projectsSubtitle, { color: themeColors.subtext }]}>The most explored projects in India</Text>
+            <AppText variant="h2" weight="bold" color="#001f3f">Projects in High Demand</AppText>
+            <AppText variant="small" weight="medium" color={themeColors.subtext} style={{ marginTop: 4 }}>The most explored projects in India</AppText>
           </View>
         </View>
         
@@ -464,14 +465,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   premiumGreeting: {
-    fontSize: 28,
-    fontWeight: '900',
     letterSpacing: -0.8,
   },
   premiumSubtext: {
-    fontSize: 14,
     marginTop: 2,
-    fontWeight: '500',
   },
   premiumProfileBtn: {
     width: 48,
@@ -493,14 +490,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   premiumMetaValue: {
-    fontSize: 20,
-    fontWeight: '800',
   },
   premiumMetaLabel: {
-    fontSize: 11,
     marginTop: 4,
-    fontWeight: '600',
-    textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   premiumMetaDivider: {
@@ -517,8 +509,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   contentSectionTitle: {
-    fontSize: 18,
-    fontWeight: '800',
     letterSpacing: -0.4,
   },
   statsGrid: {
@@ -575,14 +565,10 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   toolTitle: {
-    fontSize: 16,
-    fontWeight: '800',
     letterSpacing: -0.3,
   },
   toolDesc: {
-    fontSize: 12,
     marginTop: 4,
-    lineHeight: 16,
   },
   bannerContainer: {
     height: 360,
@@ -607,7 +593,6 @@ const styles = StyleSheet.create({
   bannerText: {
     color: '#fff',
     fontSize: 48,
-    fontWeight: '900',
     lineHeight: 52,
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 0, height: 2 },
@@ -653,8 +638,6 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   searchInput: {
-    fontSize: 17,
-    fontWeight: '500',
   },
   micBtn: {
     padding: 4,
@@ -670,9 +653,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   recentSearchLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    lineHeight: 14,
   },
   modernChip: {
     paddingHorizontal: 16,
@@ -683,8 +663,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modernChipText: {
-    fontSize: 14,
-    fontWeight: '600',
   },
   projectsSection: {
     marginTop: 40,
@@ -692,15 +670,11 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   projectsTitle: {
-    fontSize: 24,
-    fontWeight: '900',
     letterSpacing: -0.8,
     color: '#001f3f',
   },
   projectsSubtitle: {
-    fontSize: 15,
     marginTop: 4,
-    fontWeight: '500',
     opacity: 0.7,
   },
   seeAllBtn: {
@@ -749,8 +723,6 @@ const styles = StyleSheet.create({
   },
   newLaunchText: {
     color: '#fff',
-    fontSize: 9,
-    fontWeight: '900',
     letterSpacing: 0.5,
   },
   reraBadgeSmall: {
@@ -761,8 +733,6 @@ const styles = StyleSheet.create({
   },
   reraTextSmall: {
     color: '#fff',
-    fontSize: 9,
-    fontWeight: '900',
   },
   heartBtnSmall: {
     position: 'absolute',
@@ -797,8 +767,6 @@ const styles = StyleSheet.create({
   },
   possessionTextSmall: {
     color: '#fff',
-    fontSize: 10,
-    fontWeight: '700',
   },
   featuredInfo: {
     padding: 16,
@@ -810,8 +778,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   featuredPriceModern: {
-    fontSize: 20,
-    fontWeight: '900',
     letterSpacing: -0.5,
   },
   configBadge: {
@@ -820,12 +786,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   configText: {
-    fontSize: 11,
-    fontWeight: '800',
   },
   featuredTitleModern: {
-    fontSize: 16,
-    fontWeight: '800',
     letterSpacing: -0.3,
     marginBottom: 4,
   },
@@ -835,8 +797,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   featuredLocationModern: {
-    fontSize: 13,
-    fontWeight: '500',
   },
   premiumLoader: {
     height: 200,

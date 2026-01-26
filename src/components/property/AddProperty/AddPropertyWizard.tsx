@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { 
   View, 
-  Text, 
   StyleSheet, 
   TouchableOpacity, 
   ActivityIndicator, 
@@ -9,6 +8,7 @@ import {
   KeyboardAvoidingView, 
   Platform
 } from 'react-native';
+import { AppText } from '../../AppText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
@@ -137,19 +137,19 @@ const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, se
           </TouchableOpacity>
           
           <View style={styles.headerTextContainer}>
-            <Text style={[styles.headerSubtitle, { color: theme.subtext }]}>
+            <AppText variant="caption" weight="semiBold" color={theme.subtext} style={{ textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2 }}>
               Step {currentStep + 1} of {steps.length}
-            </Text>
-            <Text style={[styles.headerTitle, { color: theme.text }]}>
+            </AppText>
+            <AppText variant="title" weight="bold" color={theme.text} style={{ letterSpacing: -0.5 }}>
               {steps[currentStep].title}
-            </Text>
+            </AppText>
           </View>
 
           <View style={styles.progressContainer}>
             <View style={[styles.progressCircle, { borderColor: theme.border }]}>
-              <Text style={[styles.progressPercent, { color: theme.primary }]}>
+              <AppText variant="caption" weight="bold" color={theme.primary}>
                 {Math.round(progress)}%
-              </Text>
+              </AppText>
             </View>
           </View>
         </View>
@@ -176,7 +176,7 @@ const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, se
               style={[styles.backButton, { backgroundColor: theme.card, borderColor: theme.border }]} 
               onPress={goToPreviousStep}
             >
-              <Text style={[styles.backButtonText, { color: theme.text }]}>Back</Text>
+              <AppText variant="body" weight="semiBold" color={theme.text}>Back</AppText>
             </TouchableOpacity>
           )}
           
@@ -185,7 +185,7 @@ const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, se
               style={[styles.skipButton, { borderColor: theme.border }]} 
               onPress={goToNextStep}
             >
-              <Text style={[styles.skipButtonText, { color: theme.subtext }]}>Skip</Text>
+              <AppText variant="small" weight="semiBold" color={theme.subtext}>Skip</AppText>
             </TouchableOpacity>
           )}
 
@@ -202,9 +202,9 @@ const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, se
               <ActivityIndicator color="#fff" />
             ) : (
               <>
-                <Text style={styles.nextButtonText}>
+                <AppText variant="body" weight="bold" color="#fff" style={{ fontSize: 17 }}>
                   {isLastStep ? 'Finalize' : 'Continue'}
-                </Text>
+                </AppText>
                 <Ionicons 
                   name={isLastStep ? "checkmark-circle" : "arrow-forward"} 
                   size={20} 
@@ -274,16 +274,8 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   headerSubtitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 2,
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: '800',
-    letterSpacing: -0.5,
   },
   progressContainer: {
     marginLeft: 10,
@@ -297,8 +289,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressPercent: {
-    fontSize: 12,
-    fontWeight: '700',
   },
   progressBarOuter: {
     height: 3,
@@ -337,8 +327,6 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
   },
   backButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
   },
   skipButton: {
     paddingHorizontal: 15,
@@ -347,8 +335,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   skipButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
   },
   nextButton: {
     flex: 1,
@@ -364,9 +350,6 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   nextButtonText: {
-    color: '#fff',
-    fontSize: 17,
-    fontWeight: '700',
   },
 });
 

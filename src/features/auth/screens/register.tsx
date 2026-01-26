@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import authStore from '../../../stores/AuthStore';
 import { useThemeColor } from '../../../hooks/useThemeColor';
 import ScreenLayout from '../../../components/ScreenLayout';
+import { AppText } from '../../../components/AppText';
 import { normalizeAfghanPhone, isAfghanPhoneValid } from '../../../utils/phoneUtils';
 
 
@@ -93,20 +94,22 @@ const RegisterScreen = observer(() => {
           <View style={[styles.logoContainer, { backgroundColor: themeColors.primary + '10' }]}>
             <Ionicons name="person-add" size={40} color={themeColors.primary} />
           </View>
-          <Text style={[styles.title, { color: themeColors.text }]}>Create Account</Text>
-          <Text style={[styles.subtitle, { color: themeColors.subtext }]}>Join our community and find your dream property</Text>
+          <AppText variant="h1" weight="bold">Create Account</AppText>
+          <AppText variant="body" color={themeColors.subtext} style={{ textAlign: 'center', opacity: 0.8, paddingHorizontal: 20 }}>
+            Join our community and find your dream property
+          </AppText>
         </View>
 
         <View style={styles.form}>
           {error ? (
             <View style={[styles.errorContainer, { backgroundColor: themeColors.danger + '10', borderColor: themeColors.danger + '30' }]}>
               <Ionicons name="alert-circle" size={20} color={themeColors.danger} />
-              <Text style={[styles.errorText, { color: themeColors.danger }]}>{error}</Text>
+              <AppText variant="small" weight="medium" color={themeColors.danger} style={{ flex: 1 }}>{error}</AppText>
             </View>
           ) : null}
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: themeColors.text }]}>Full Name</Text>
+            <AppText variant="small" weight="bold" style={{ marginLeft: 4, marginBottom: 8 }}>Full Name</AppText>
             <View style={[styles.inputWrapper, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
               <Ionicons name="person-outline" size={20} color={themeColors.subtext} style={styles.inputIcon} />
               <TextInput
@@ -120,10 +123,10 @@ const RegisterScreen = observer(() => {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: themeColors.text }]}>Phone Number</Text>
+            <AppText variant="small" weight="bold" style={{ marginLeft: 4, marginBottom: 8 }}>Phone Number</AppText>
             <View style={[styles.phoneInputWrapper, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
               <View style={[styles.phonePrefix, { borderRightColor: themeColors.border }]}>
-                <Text style={[styles.phonePrefixText, { color: themeColors.text }]}>+93</Text>
+                <AppText weight="bold">+93</AppText>
               </View>
               <TextInput
                 style={[styles.phoneInput, { color: themeColors.text }]}
@@ -135,12 +138,14 @@ const RegisterScreen = observer(() => {
               />
             </View>
             {phoneValidationMessage ? (
-              <Text style={[styles.helperText, { color: phoneValidationColor }]}>{phoneValidationMessage}</Text>
+              <AppText variant="caption" weight="medium" color={phoneValidationColor} style={{ marginLeft: 4, marginTop: 4 }}>
+                {phoneValidationMessage}
+              </AppText>
             ) : null}
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: themeColors.text }]}>Password</Text>
+            <AppText variant="small" weight="bold" style={{ marginLeft: 4, marginBottom: 8 }}>Password</AppText>
             <View style={[styles.inputWrapper, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
               <Ionicons name="lock-closed-outline" size={20} color={themeColors.subtext} style={styles.inputIcon} />
               <TextInput
@@ -162,7 +167,7 @@ const RegisterScreen = observer(() => {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: themeColors.text }]}>Confirm Password</Text>
+            <AppText variant="small" weight="bold" style={{ marginLeft: 4, marginBottom: 8 }}>Confirm Password</AppText>
             <View style={[styles.inputWrapper, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
               <Ionicons name="lock-closed-outline" size={20} color={themeColors.subtext} style={styles.inputIcon} />
               <TextInput
@@ -192,16 +197,16 @@ const RegisterScreen = observer(() => {
               <ActivityIndicator color="#fff" />
             ) : (
               <>
-                <Text style={styles.registerButtonText}>Create Account</Text>
+                <AppText weight="bold" color="#fff">Create Account</AppText>
                 <Ionicons name="arrow-forward" size={20} color="#fff" style={styles.buttonIcon} />
               </>
             )}
           </TouchableOpacity>
 
           <View style={styles.footer}>
-            <Text style={[styles.footerText, { color: themeColors.subtext }]}>Already have an account? </Text>
+            <AppText variant="small" color={themeColors.subtext}>Already have an account? </AppText>
             <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-              <Text style={[styles.linkText, { color: themeColors.primary }]}>Sign in</Text>
+              <AppText variant="small" weight="bold" color={themeColors.primary}>Sign in</AppText>
             </TouchableOpacity>
           </View>
         </View>
@@ -238,18 +243,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '800',
-    letterSpacing: -0.5,
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 15,
-    textAlign: 'center',
-    opacity: 0.8,
-    paddingHorizontal: 20,
-  },
   form: {
     gap: 16,
   },
@@ -262,18 +255,8 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 4,
   },
-  errorText: {
-    fontSize: 14,
-    fontWeight: '500',
-    flex: 1,
-  },
   inputGroup: {
     gap: 6,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginLeft: 4,
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -298,10 +281,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRightWidth: 1.5,
   },
-  phonePrefixText: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
   phoneInput: {
     flex: 1,
     fontSize: 16,
@@ -319,11 +298,6 @@ const styles = StyleSheet.create({
   eyeIcon: {
     padding: 4,
   },
-  helperText: {
-    fontSize: 12,
-    fontWeight: '500',
-    marginLeft: 4,
-  },
   registerButton: {
     height: 56,
     borderRadius: 20,
@@ -340,11 +314,6 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     opacity: 0.6,
   },
-  registerButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
-  },
   buttonIcon: {
     marginLeft: 8,
   },
@@ -353,14 +322,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 10,
     paddingBottom: 20,
-  },
-  footerText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  linkText: {
-    fontSize: 14,
-    fontWeight: '700',
   },
 });
 

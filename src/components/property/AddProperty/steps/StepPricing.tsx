@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, TextInput, Switch, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, TextInput, Switch, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useFormikContext } from 'formik';
 import { useThemeColor } from '../../../../hooks/useThemeColor';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import AppText from '../../../common/AppText';
 
 const StepPricing = () => {
   const { values, setFieldValue, errors, touched } = useFormikContext<any>();
@@ -10,7 +11,7 @@ const StepPricing = () => {
 
   const renderError = (field: string) => {
     if (touched[field] && errors[field]) {
-      return <Text style={[styles.errorText, { color: theme.danger }]}>{errors[field] as string}</Text>;
+      return <AppText variant="tiny" fontWeight="600" style={[{ color: theme.danger }, styles.errorText]}>{errors[field] as string}</AppText>;
     }
     return null;
   };
@@ -31,10 +32,10 @@ const StepPricing = () => {
             />
           </View>
           <View>
-            <Text style={[styles.optionLabel, { color: theme.text }]}>{label}</Text>
-            <Text style={[styles.optionSub, { color: theme.subtext }]}>
+            <AppText fontWeight="700" style={[{ color: theme.text }, styles.optionLabel]}>{label}</AppText>
+            <AppText variant="tiny" fontWeight="500" style={[{ color: theme.subtext }, styles.optionSub]}>
               {isActive ? 'Currently active' : 'Tap to enable'}
-            </Text>
+            </AppText>
           </View>
         </View>
         <Switch
@@ -47,11 +48,11 @@ const StepPricing = () => {
 
       {isActive && (
         <View style={styles.priceContainer}>
-          <Text style={[styles.priceLabel, { color: theme.text }]}>
+          <AppText variant="caption" fontWeight="600" style={[{ color: theme.text }, styles.priceLabel]}>
             {type === 'sale' ? 'Expected Sale Price' : 'Monthly Rent'}
-          </Text>
+          </AppText>
           <View style={[styles.priceInputWrapper, { backgroundColor: theme.background, borderColor: theme.border }]}>
-            <Text style={[styles.currency, { color: theme.subtext }]}>Rs</Text>
+            <AppText fontWeight="700" style={[{ color: theme.subtext }, styles.currency]}>Rs</AppText>
             <TextInput
               style={[styles.input, { color: theme.text }]}
               value={priceValue ? String(priceValue) : ''}
@@ -69,10 +70,10 @@ const StepPricing = () => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-      <Text style={[styles.sectionTitle, { color: theme.text }]}>Pricing Strategy</Text>
-      <Text style={[styles.sectionSubtitle, { color: theme.subtext }]}>
+      <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Pricing Strategy</AppText>
+      <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
         How would you like to list your property? You can select one or both.
-      </Text>
+      </AppText>
 
       <OptionCard
         type="sale"
@@ -97,17 +98,17 @@ const StepPricing = () => {
       {errors && (errors as any).atLeastOnePurpose && (
         <View style={[styles.globalError, { backgroundColor: theme.danger + '10', borderColor: theme.danger + '30' }]}>
           <Ionicons name="alert-circle-outline" size={20} color={theme.danger} />
-          <Text style={[styles.globalErrorText, { color: theme.danger }]}>
+          <AppText variant="caption" fontWeight="600" style={{ color: theme.danger }}>
             {(errors as any).atLeastOnePurpose}
-          </Text>
+          </AppText>
         </View>
       )}
 
       <View style={[styles.infoBox, { backgroundColor: theme.border + '20' }]}>
         <Ionicons name="shield-checkmark-outline" size={20} color={theme.subtext} />
-        <Text style={[styles.infoText, { color: theme.subtext }]}>
+        <AppText variant="tiny" fontWeight="500" style={[{ color: theme.subtext }, styles.infoText]}>
           Your pricing information is stored securely and can be updated at any time.
-        </Text>
+        </AppText>
       </View>
     </ScrollView>
   );
@@ -120,12 +121,9 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   sectionTitle: { 
-    fontSize: 20, 
-    fontWeight: '800',
     letterSpacing: -0.5,
   },
   sectionSubtitle: { 
-    fontSize: 14, 
     marginBottom: 24,
     marginTop: 2,
   },
@@ -153,12 +151,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   optionLabel: { 
-    fontSize: 16, 
-    fontWeight: '700',
   },
   optionSub: {
-    fontSize: 12,
-    fontWeight: '500',
     marginTop: 2,
   },
   priceContainer: { 
@@ -168,8 +162,6 @@ const styles = StyleSheet.create({
     borderTopColor: 'rgba(0,0,0,0.05)',
   },
   priceLabel: { 
-    fontSize: 14, 
-    fontWeight: '600', 
     marginBottom: 10,
     marginLeft: 4,
   },
@@ -182,8 +174,6 @@ const styles = StyleSheet.create({
     height: 56,
   },
   currency: { 
-    fontSize: 16, 
-    fontWeight: '700', 
     marginRight: 10,
   },
   input: { 
@@ -192,10 +182,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   errorText: { 
-    fontSize: 12, 
     marginTop: 6, 
     marginLeft: 4,
-    fontWeight: '600',
   },
   globalError: { 
     flexDirection: 'row',
@@ -207,8 +195,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   globalErrorText: {
-    fontSize: 14,
-    fontWeight: '600',
   },
   infoBox: {
     flexDirection: 'row',
@@ -220,9 +206,7 @@ const styles = StyleSheet.create({
   },
   infoText: {
     flex: 1,
-    fontSize: 12,
     lineHeight: 18,
-    fontWeight: '500',
   }
 });
 

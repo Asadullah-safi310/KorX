@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Image, StyleSheet, Text } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getImageUrl } from '../utils/mediaUtils';
 import { useThemeColor } from '../hooks/useThemeColor';
+import { AppText } from './AppText';
 
 interface AvatarProps {
   user?: {
@@ -66,10 +67,15 @@ const Avatar: React.FC<AvatarProps> = ({ user, size = 'md' }) => {
           backgroundColor: themeColors.gray[200]
         }]}>
           {initials ? (
-            <Text style={[styles.initials, { 
-              fontSize: avatarSize / 2.5,
-              color: themeColors.gray[600]
-            }]}>{initials}</Text>
+            <AppText 
+              weight="bold"
+              style={{ 
+                fontSize: avatarSize / 2.5,
+                color: themeColors.gray[600]
+              }}
+            >
+              {initials}
+            </AppText>
           ) : (
             <Ionicons name="person" size={avatarSize / 1.5} color={themeColors.gray[400]} />
           )}
@@ -88,9 +94,6 @@ const styles = StyleSheet.create({
   placeholder: {
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  initials: {
-    fontWeight: 'bold',
   },
 });
 

@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { useFormikContext } from 'formik';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColor } from '../../../../hooks/useThemeColor';
 import { getImageUrl } from '../../../../utils/mediaUtils';
 import personStore from '../../../../stores/PersonStore';
+import AppText from '../../../common/AppText';
 
 const { width } = Dimensions.get('window');
 
@@ -21,10 +22,10 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
   const ReviewSection = ({ title, stepIndex, children }: { title: string; stepIndex: number; children: React.ReactNode }) => (
     <View style={[styles.section, { borderColor: theme.border, backgroundColor: theme.card }]}>
       <View style={styles.sectionHeader}>
-        <Text style={[styles.sectionTitle, { color: theme.text }]}>{title}</Text>
+        <AppText variant="caption" fontWeight="800" style={[{ color: theme.text }, styles.sectionTitle]}>{title}</AppText>
         <TouchableOpacity onPress={() => onEditStep(stepIndex)} style={styles.editBtn}>
           <Ionicons name="create-outline" size={16} color={theme.primary} />
-          <Text style={[styles.editBtnText, { color: theme.primary }]}>Edit</Text>
+          <AppText variant="tiny" fontWeight="700" style={{ color: theme.primary }}>Edit</AppText>
         </TouchableOpacity>
       </View>
       <View style={styles.sectionContent}>
@@ -37,18 +38,18 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
     <View style={styles.infoRow}>
       <View style={styles.infoLabelContainer}>
         {icon && <MaterialCommunityIcons name={icon} size={16} color={theme.subtext} style={{ marginRight: 6 }} />}
-        <Text style={[styles.infoLabel, { color: theme.subtext }]}>{label}</Text>
+        <AppText variant="caption" fontWeight="500" style={{ color: theme.subtext }}>{label}</AppText>
       </View>
-      <Text style={[styles.infoValue, { color: theme.text }]}>{value || 'N/A'}</Text>
+      <AppText variant="caption" fontWeight="700" style={[{ color: theme.text }, styles.infoValue]}>{value || 'N/A'}</AppText>
     </View>
   );
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-      <Text style={[styles.pageTitle, { color: theme.text }]}>Review Your Listing</Text>
-      <Text style={[styles.subTitle, { color: theme.subtext }]}>
+      <AppText variant="h1" fontWeight="800" style={{ color: theme.text }}>Review Your Listing</AppText>
+      <AppText variant="caption" style={[{ color: theme.subtext }, styles.subTitle]}>
         Please double-check all details before submitting your property.
-      </Text>
+      </AppText>
 
       <ReviewSection title="Type & Agent" stepIndex={0}>
         <InfoRow label="Property Type" value={values.property_type} icon="home-city-outline" />
@@ -71,10 +72,10 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
       <ReviewSection title="Map Location" stepIndex={2}>
         <View style={styles.coordsRow}>
           <View style={styles.coordBadge}>
-            <Text style={styles.coordText}>Lat: {values.latitude ? values.latitude.toFixed(6) : 'Not set'}</Text>
+            <AppText variant="tiny" fontWeight="700" style={styles.coordText}>Lat: {values.latitude ? values.latitude.toFixed(6) : 'Not set'}</AppText>
           </View>
           <View style={styles.coordBadge}>
-            <Text style={styles.coordText}>Lng: {values.longitude ? values.longitude.toFixed(6) : 'Not set'}</Text>
+            <AppText variant="tiny" fontWeight="700" style={styles.coordText}>Lng: {values.longitude ? values.longitude.toFixed(6) : 'Not set'}</AppText>
           </View>
         </View>
       </ReviewSection>

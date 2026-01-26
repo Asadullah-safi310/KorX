@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, Platform } from 'react-native';
+import { View, StyleSheet, TextInput, ScrollView, Platform } from 'react-native';
 import { useFormikContext } from 'formik';
 import { useThemeColor } from '../../../../hooks/useThemeColor';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import AppText from '../../../common/AppText';
 
 
 // Safe import for react-native-maps
@@ -43,7 +44,7 @@ const StepLocation = () => {
 
   const renderError = (field: string) => {
     if (touched[field] && errors[field]) {
-      return <Text style={[styles.errorText, { color: theme.danger }]}>{errors[field] as string}</Text>;
+      return <AppText variant="tiny" fontWeight="600" style={[{ color: theme.danger }, styles.errorText]}>{errors[field] as string}</AppText>;
     }
     return null;
   };
@@ -52,12 +53,12 @@ const StepLocation = () => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-      <Text style={[styles.sectionTitle, { color: theme.text }]}>Map Placement</Text>
-      <Text style={[styles.sectionSubtitle, { color: theme.subtext }]}>
+      <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Map Placement</AppText>
+      <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
         {isMapAvailable 
           ? 'Pin the exact location of your property on the map.' 
           : 'Interactive map is currently unavailable. Please provide coordinates.'}
-      </Text>
+      </AppText>
 
       <View style={[styles.mapWrapper, { borderColor: theme.border, backgroundColor: theme.card }]}>
         {isMapAvailable ? (
@@ -79,10 +80,10 @@ const StepLocation = () => {
             <View style={[styles.placeholderIcon, { backgroundColor: theme.primary + '10' }]}>
               <MaterialCommunityIcons name="map-marker-radius-outline" size={48} color={theme.primary} />
             </View>
-            <Text style={[styles.placeholderText, { color: theme.text }]}>Map Preview Restricted</Text>
-            <Text style={[styles.placeholderSubtext, { color: theme.subtext }]}>
+            <AppText variant="title" fontWeight="700" style={{ color: theme.text }}>Map Preview Restricted</AppText>
+            <AppText variant="caption" style={[{ color: theme.subtext }, styles.placeholderSubtext]}>
               Manual coordinate entry is required.
-            </Text>
+            </AppText>
           </View>
         )}
         
@@ -90,7 +91,7 @@ const StepLocation = () => {
           <View style={styles.mapOverlay}>
             <View style={[styles.overlayBadge, { backgroundColor: 'rgba(0,0,0,0.6)' }]}>
               <Ionicons name="information-circle" size={14} color="#fff" />
-              <Text style={styles.overlayText}>Tap to place marker</Text>
+              <AppText variant="tiny" fontWeight="600" style={{ color: '#fff' }}>Tap to place marker</AppText>
             </View>
           </View>
         )}
@@ -98,7 +99,7 @@ const StepLocation = () => {
       
       <View style={styles.coordsGrid}>
         <View style={styles.coordBox}>
-          <Text style={[styles.coordLabel, { color: theme.subtext }]}>LATITUDE</Text>
+          <AppText variant="tiny" fontWeight="700" style={[{ color: theme.subtext }, styles.coordLabel]}>LATITUDE</AppText>
           <View style={[styles.coordInput, { backgroundColor: theme.card, borderColor: theme.border }]}>
             <TextInput
               style={[styles.input, { color: theme.text }]}
@@ -111,7 +112,7 @@ const StepLocation = () => {
           </View>
         </View>
         <View style={styles.coordBox}>
-          <Text style={[styles.coordLabel, { color: theme.subtext }]}>LONGITUDE</Text>
+          <AppText variant="tiny" fontWeight="700" style={[{ color: theme.subtext }, styles.coordLabel]}>LONGITUDE</AppText>
           <View style={[styles.coordInput, { backgroundColor: theme.card, borderColor: theme.border }]}>
             <TextInput
               style={[styles.input, { color: theme.text }]}
@@ -129,9 +130,9 @@ const StepLocation = () => {
       
       <View style={[styles.tipBox, { backgroundColor: theme.primary + '08', borderColor: theme.primary + '20' }]}>
         <Ionicons name="bulb-outline" size={20} color={theme.primary} />
-        <Text style={[styles.tipText, { color: theme.text }]}>
+        <AppText variant="caption" fontWeight="500" style={[{ color: theme.text }, styles.tipText]}>
           Precise location helps buyers find your property and increases trust in your listing.
-        </Text>
+        </AppText>
       </View>
     </ScrollView>
   );
@@ -144,12 +145,9 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   sectionTitle: { 
-    fontSize: 20, 
-    fontWeight: '800',
     letterSpacing: -0.5,
   },
   sectionSubtitle: { 
-    fontSize: 14, 
     marginBottom: 20,
     marginTop: 2,
   },
@@ -179,12 +177,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   placeholderText: {
-    fontSize: 18,
-    fontWeight: '700',
     marginBottom: 4,
   },
   placeholderSubtext: {
-    fontSize: 14,
     textAlign: 'center',
   },
   mapOverlay: {
@@ -201,9 +196,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   overlayText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
   },
   coordsGrid: {
     flexDirection: 'row',
@@ -215,8 +207,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   coordLabel: {
-    fontSize: 11,
-    fontWeight: '700',
     letterSpacing: 1,
     marginLeft: 4,
   },
@@ -242,15 +232,11 @@ const styles = StyleSheet.create({
   },
   tipText: {
     flex: 1,
-    fontSize: 13,
     lineHeight: 18,
-    fontWeight: '500',
   },
   errorText: { 
-    fontSize: 12, 
     marginTop: 4, 
     marginLeft: 4,
-    fontWeight: '600',
   },
 });
 

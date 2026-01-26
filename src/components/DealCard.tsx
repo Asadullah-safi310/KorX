@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '../hooks/useThemeColor';
+import { AppText } from './AppText';
 
 interface DealCardProps {
   deal: any;
@@ -32,43 +33,43 @@ export function DealCard({ deal, onPress }: DealCardProps) {
     >
       <View style={styles.header}>
         <View style={[styles.typeBadge, { backgroundColor: themeColors.primary + '10' }]}>
-          <Text style={[styles.typeText, { color: themeColors.primary }]}>{deal.deal_type}</Text>
+          <AppText variant="caption" weight="bold" color={themeColors.primary}>{deal.deal_type}</AppText>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(deal.status) + '15' }]}>
           <View style={[styles.statusDot, { backgroundColor: getStatusColor(deal.status) }]} />
-          <Text style={[styles.statusText, { color: getStatusColor(deal.status) }]}>
+          <AppText variant="caption" weight="semiBold" color={getStatusColor(deal.status)}>
             {deal.status.charAt(0).toUpperCase() + deal.status.slice(1)}
-          </Text>
+          </AppText>
         </View>
       </View>
 
       <View style={styles.content}>
-        <Text style={[styles.propertyTitle, { color: themeColors.text }]} numberOfLines={1}>
+        <AppText variant="title" weight="bold" numberOfLines={1} style={{ marginBottom: 4 }}>
           Property #{deal.property_id}
-        </Text>
+        </AppText>
 
         <View style={[styles.participants, { backgroundColor: themeColors.background + '80' }]}>
           <View style={styles.participant}>
-            <Text style={[styles.label, { color: themeColors.subtext }]}>Seller</Text>
-            <Text style={[styles.name, { color: themeColors.text }]} numberOfLines={1}>{deal.seller_name_snapshot || 'N/A'}</Text>
+            <AppText variant="caption" weight="medium" color={themeColors.subtext} style={styles.label}>Seller</AppText>
+            <AppText variant="small" weight="semiBold" numberOfLines={1}>{deal.seller_name_snapshot || 'N/A'}</AppText>
           </View>
           <View style={styles.connector}>
             <Ionicons name="repeat" size={16} color={themeColors.border} />
           </View>
           <View style={styles.participant}>
-            <Text style={[styles.label, { color: themeColors.subtext }]}>Buyer</Text>
-            <Text style={[styles.name, { color: themeColors.text }]} numberOfLines={1}>{deal.buyer_name_snapshot || 'N/A'}</Text>
+            <AppText variant="caption" weight="medium" color={themeColors.subtext} style={styles.label}>Buyer</AppText>
+            <AppText variant="small" weight="semiBold" numberOfLines={1}>{deal.buyer_name_snapshot || 'N/A'}</AppText>
           </View>
         </View>
 
         <View style={styles.footer}>
           <View style={styles.priceContainer}>
-            <Text style={[styles.label, { color: themeColors.subtext }]}>Deal Value</Text>
-            <Text style={[styles.price, { color: themeColors.text }]}>Rs {parseFloat(deal.price).toLocaleString()}</Text>
+            <AppText variant="caption" weight="medium" color={themeColors.subtext} style={styles.label}>Deal Value</AppText>
+            <AppText variant="h3" weight="bold">Rs {parseFloat(deal.price).toLocaleString()}</AppText>
           </View>
           <View style={styles.dateContainer}>
             <Ionicons name="calendar-outline" size={14} color={themeColors.subtext} style={{ marginRight: 4 }} />
-            <Text style={[styles.date, { color: themeColors.subtext }]}>{formatDate(deal.start_date)}</Text>
+            <AppText variant="caption" color={themeColors.subtext}>{formatDate(deal.start_date)}</AppText>
           </View>
         </View>
       </View>
@@ -98,11 +99,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 8,
   },
-  typeText: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
   statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -116,17 +112,8 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
   },
-  statusText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
   content: {
     gap: 12,
-  },
-  propertyTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 4,
   },
   participants: {
     flexDirection: 'row',
@@ -142,15 +129,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   label: {
-    fontSize: 11,
-    fontWeight: '500',
     marginBottom: 2,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-  },
-  name: {
-    fontSize: 14,
-    fontWeight: '600',
   },
   footer: {
     flexDirection: 'row',
@@ -162,16 +143,8 @@ const styles = StyleSheet.create({
   priceContainer: {
     flex: 1,
   },
-  price: {
-    fontSize: 18,
-    fontWeight: '800',
-  },
   dateContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  date: {
-    fontSize: 13,
-    fontWeight: '500',
   },
 });

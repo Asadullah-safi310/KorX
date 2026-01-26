@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { View, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { AppText } from '../../../../AppText';
 import { useFormikContext } from 'formik';
 import { observer } from 'mobx-react-lite';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';

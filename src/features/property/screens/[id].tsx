@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, TouchableOpacity, Dimensions, Linking, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, ActivityIndicator, TouchableOpacity, Dimensions, Linking, Alert } from 'react-native';
+import { AppText } from '../../../components/AppText';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { observer } from 'mobx-react-lite';
@@ -32,7 +33,7 @@ const ProfileSection = observer(({ title, user, type }: { title: string; user: a
 
   return (
     <View style={styles.profileSectionWrapper}>
-      {title ? <Text style={[styles.sectionTitle, { color: theme.text }]}>{title}</Text> : null}
+      {title ? <AppText variant="title" weight="bold" color={theme.text} style={{ marginBottom: 16 }}>{title}</AppText> : null}
       <TouchableOpacity 
         activeOpacity={0.7} 
         onPress={handleProfilePress} 
@@ -40,10 +41,10 @@ const ProfileSection = observer(({ title, user, type }: { title: string; user: a
       >
         <Avatar user={user} size="md" />
         <View style={styles.miniProfileInfo}>
-          <Text style={[styles.miniProfileName, { color: theme.text }]}>{user.full_name}</Text>
-          <Text style={[styles.miniProfileRole, { color: theme.subtext }]}>
+          <AppText variant="body" weight="bold" color={theme.text}>{user.full_name}</AppText>
+          <AppText variant="small" weight="medium" color={theme.subtext}>
             {type === 'Agent' ? 'Verified Agent' : 'Property Owner'}
-          </Text>
+          </AppText>
         </View>
         <Ionicons name="chevron-forward" size={20} color={theme.subtext} style={styles.miniProfileArrow} />
       </TouchableOpacity>
@@ -149,12 +150,12 @@ const PropertyDetailsScreen = observer(() => {
       <ScreenLayout backgroundColor={theme.background}>
         <View style={styles.center}>
           <Ionicons name="alert-circle-outline" size={64} color={theme.danger} />
-          <Text style={[styles.errorText, { color: theme.text }]}>{error || 'Property not found'}</Text>
+          <AppText variant="body" weight="medium" color={theme.text} style={{ marginTop: 12 }}>{error || 'Property not found'}</AppText>
           <TouchableOpacity 
             style={[styles.backButton, { backgroundColor: primaryColor }]} 
             onPress={() => router.back()}
           >
-            <Text style={styles.backButtonText}>Return to Browse</Text>
+            <AppText variant="body" weight="bold" color="#fff">Return to Browse</AppText>
           </TouchableOpacity>
         </View>
       </ScreenLayout>
@@ -246,7 +247,7 @@ const PropertyDetailsScreen = observer(() => {
           {photos.length > 1 && (
             <View style={styles.imageBadge}>
               <BlurView intensity={40} style={styles.badgeBlur} tint="dark">
-                <Text style={styles.imageBadgeText}>{activeImageIndex + 1} / {photos.length}</Text>
+                <AppText variant="caption" weight="bold" color="#fff">{activeImageIndex + 1} / {photos.length}</AppText>
               </BlurView>
             </View>
           )}
@@ -259,35 +260,35 @@ const PropertyDetailsScreen = observer(() => {
           <View style={styles.headerInfo}>
             <View style={styles.typeRow}>
               <View style={[styles.typeTag, { backgroundColor: primaryColor + '12' }]}>
-                <Text style={[styles.typeTagText, { color: primaryColor }]}>FOR {property.purpose}</Text>
+                <AppText variant="caption" weight="bold" color={primaryColor} style={{ textTransform: 'uppercase', fontSize: 11 }}>FOR {property.purpose}</AppText>
               </View>
               <View style={[styles.typeTag, { backgroundColor: '#10b98112', marginLeft: 8 }]}>
-                <Text style={[styles.typeTagText, { color: '#10b981' }]}>{property.property_type}</Text>
+                <AppText variant="caption" weight="bold" color="#10b981" style={{ textTransform: 'uppercase', fontSize: 11 }}>{property.property_type}</AppText>
               </View>
             </View>
 
             <View style={styles.priceRow}>
-              <Text style={[styles.priceText, { color: theme.text }]}>
+              <AppText variant="h1" weight="bold" color={theme.text} style={{ fontSize: 30, letterSpacing: -1 }}>
                 Rs {price.toLocaleString()}
-                {property.purpose === 'RENT' && <Text style={[styles.rentPeriod, { color: theme.subtext }]}> / month</Text>}
-              </Text>
+                {property.purpose === 'RENT' && <AppText variant="body" weight="semiBold" color={theme.subtext}> / month</AppText>}
+              </AppText>
             </View>
 
-            <Text style={[styles.titleText, { color: theme.text }]}>
+            <AppText variant="h2" weight="bold" color={theme.text} style={{ marginBottom: 8, letterSpacing: -0.5 }}>
               {property.AreaData?.name || property.DistrictData?.name || property.city} Premium Residence
-            </Text>
+            </AppText>
 
             <View style={styles.locationContainer}>
               <View style={[styles.locIconBg, { backgroundColor: primaryColor + '10' }]}>
                 <Ionicons name="location" size={14} color={primaryColor} />
               </View>
-              <Text style={[styles.locationText, { color: theme.subtext }]} numberOfLines={2}>
+              <AppText variant="small" weight="medium" color={theme.subtext} numberOfLines={2} style={{ marginLeft: 4, fontSize: 15 }}>
                 {[
                   property.AreaData?.name,
                   property.DistrictData?.name,
                   property.ProvinceData?.name
                 ].filter(Boolean).join(', ')}
-              </Text>
+              </AppText>
             </View>
           </View>
 
@@ -299,15 +300,15 @@ const PropertyDetailsScreen = observer(() => {
                   <View style={[styles.featIcon, { backgroundColor: '#3b82f615' }]}>
                     <Ionicons name="bed" size={18} color="#3b82f6" />
                   </View>
-                  <Text style={[styles.featValue, { color: theme.text }]}>{property.bedrooms || 0}</Text>
-                  <Text style={[styles.featLabel, { color: theme.subtext }]}>Bedrooms</Text>
+                  <AppText variant="title" weight="bold" color={theme.text} style={{ marginTop: 8 }}>{property.bedrooms || 0}</AppText>
+                  <AppText variant="caption" weight="semiBold" color={theme.subtext} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 2 }}>Bedrooms</AppText>
                 </View>
                 <View style={[styles.featureCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
                   <View style={[styles.featIcon, { backgroundColor: '#8b5cf615' }]}>
                     <Ionicons name="water" size={18} color="#8b5cf6" />
                   </View>
-                  <Text style={[styles.featValue, { color: theme.text }]}>{property.bathrooms || 0}</Text>
-                  <Text style={[styles.featLabel, { color: theme.subtext }]}>Bathrooms</Text>
+                  <AppText variant="title" weight="bold" color={theme.text} style={{ marginTop: 8 }}>{property.bathrooms || 0}</AppText>
+                  <AppText variant="caption" weight="semiBold" color={theme.subtext} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 2 }}>Bathrooms</AppText>
                 </View>
               </>
             )}
@@ -315,22 +316,22 @@ const PropertyDetailsScreen = observer(() => {
               <View style={[styles.featIcon, { backgroundColor: '#f59e0b15' }]}>
                 <Ionicons name="expand" size={18} color="#f59e0b" />
               </View>
-              <Text style={[styles.featValue, { color: theme.text }]}>{property.area_size}</Text>
-              <Text style={[styles.featLabel, { color: theme.subtext }]}>Sq Ft</Text>
+              <AppText variant="title" weight="bold" color={theme.text} style={{ marginTop: 8 }}>{property.area_size}</AppText>
+              <AppText variant="caption" weight="semiBold" color={theme.subtext} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 2 }}>Sq Ft</AppText>
             </View>
           </View>
 
           {/* Description */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>About this Property</Text>
-            <Text style={[styles.description, { color: theme.text, opacity: 0.8 }]}>
+            <AppText variant="title" weight="bold" color={theme.text} style={{ marginBottom: 16, letterSpacing: -0.3 }}>About this Property</AppText>
+            <AppText variant="small" color={theme.text} style={{ lineHeight: 24, opacity: 0.8, fontSize: 15 }}>
               {property.description || 'Experience luxury living in this sophisticated property. Featuring modern amenities and a prime location, this residence offers the perfect blend of comfort and style for discerning individuals.'}
-            </Text>
+            </AppText>
           </View>
 
           {/* Listing Agent */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>Professional Contact</Text>
+            <AppText variant="title" weight="bold" color={theme.text} style={{ marginBottom: 16, letterSpacing: -0.3 }}>Professional Contact</AppText>
             <ProfileSection 
               title="" 
               user={property.Agent || property.Creator} 
@@ -361,7 +362,7 @@ const PropertyDetailsScreen = observer(() => {
               }
             }}
           >
-            <Text style={styles.bookBtnText}>{canDeal ? 'Initiate Transaction' : 'Send Inquiry'}</Text>
+            <AppText variant="body" weight="bold" color="#fff">{canDeal ? 'Initiate Transaction' : 'Send Inquiry'}</AppText>
             <Ionicons name="chevron-forward" size={18} color="#fff" style={{ marginLeft: 6 }} />
           </TouchableOpacity>
         </View>
@@ -431,9 +432,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   imageBadgeText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '700',
   },
   content: {
     paddingHorizontal: 24,
@@ -461,9 +459,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   typeTagText: {
-    fontSize: 11,
-    fontWeight: '800',
-    textTransform: 'uppercase',
   },
   priceRow: {
     flexDirection: 'row',
@@ -471,28 +466,16 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   priceText: {
-    fontSize: 30,
-    fontWeight: '900',
-    letterSpacing: -1,
   },
   rentPeriod: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#64748b',
   },
   titleText: {
-    fontSize: 22,
-    fontWeight: '700',
-    marginBottom: 8,
-    letterSpacing: -0.5,
   },
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   locationText: {
-    fontSize: 15,
-    fontWeight: '500',
     marginLeft: 4,
   },
   featuresGrid: {
@@ -510,15 +493,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   featValue: {
-    fontSize: 18,
-    fontWeight: '800',
     marginTop: 8,
   },
   featLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
     marginTop: 2,
   },
   featIcon: {
@@ -532,15 +509,8 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '800',
-    marginBottom: 16,
-    letterSpacing: -0.3,
   },
   description: {
-    fontSize: 15,
-    lineHeight: 24,
-    fontWeight: '400',
   },
   profileSectionWrapper: {
     marginTop: 0,
@@ -557,12 +527,8 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   miniProfileName: {
-    fontSize: 16,
-    fontWeight: '700',
   },
   miniProfileRole: {
-    fontSize: 13,
-    fontWeight: '500',
     marginTop: 2,
   },
   miniProfileArrow: {
@@ -599,9 +565,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bookBtnText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
   },
   backButton: {
     marginTop: 20,
@@ -610,13 +573,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   backButtonText: {
-    color: '#fff',
-    fontWeight: '700',
   },
   errorText: {
-    fontSize: 16,
     marginTop: 12,
-    fontWeight: '500',
   },
 });
 
