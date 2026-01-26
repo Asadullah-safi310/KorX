@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, Pressable, FlatList, Dimensions, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { observer } from 'mobx-react-lite';
 import { getImageUrl } from '../utils/mediaUtils';
+import authStore from '../stores/AuthStore';
+import favoriteStore from '../stores/FavoriteStore';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
@@ -22,9 +26,21 @@ interface PropertyCardProps {
   variant?: 'default' | 'compact';
 }
 
-const PropertyCard = ({ property, onPress, index = 0, variant = 'default' }: PropertyCardProps) => {
+const PropertyCard = observer(({ property, onPress, index = 0, variant = 'default' }: PropertyCardProps) => {
   const themeColors = useThemeColor();
+  const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
+  
+  const isFavorite = favoriteStore.isFavorite(property.property_id);
+  
+  const toggleFavorite = (e: any) => {
+    e.stopPropagation();
+    if (!authStore.isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+    favoriteStore.toggleFavorite(property.property_id);
+  };
   
   const scale = useSharedValue(1);
   
@@ -155,6 +171,9 @@ const PropertyCard = ({ property, onPress, index = 0, variant = 'default' }: Pro
             <View style={styles.compactImageOverlay} />
             
             <View style={styles.compactBadgeRow}>
+              {(isSale || isRent) && (
+                <View style={styles.availabilityDot} />
+              )}
               {isSale && (
                 <View style={[styles.compactTag, { backgroundColor: '#e0f2ff' }]}> 
                   <AppText variant="caption" weight="bold" color="#0369a1">For Sale</AppText>
@@ -169,9 +188,13 @@ const PropertyCard = ({ property, onPress, index = 0, variant = 'default' }: Pro
             
             <PaginationDots length={photos.length} active={activeIndex} />
 
-            <View style={styles.compactFavorite}>
-              <Ionicons name="heart-outline" size={18} color="#fff" />
-            </View>
+            <TouchableOpacity 
+              style={styles.compactFavorite} 
+              onPress={toggleFavorite}
+              activeOpacity={0.7}
+            >
+              <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={18} color={isFavorite ? "#ff4d4d" : "#fff"} />
+            </TouchableOpacity>
           </View>
 
           <View style={styles.compactBody}>
@@ -248,11 +271,28 @@ const PropertyCard = ({ property, onPress, index = 0, variant = 'default' }: Pro
 
           <PaginationDots length={photos.length} active={activeIndex} />
           
+          <View style={styles.badgeRow}>
+            {(isSale || isRent) && (
+              <View style={styles.availabilityDot} />
+            )}
+            {isSale && (
+              <View style={[styles.statusTag, { backgroundColor: '#e0f2ff' }]}> 
+                <AppText variant="caption" weight="bold" color="#0369a1">For Sale</AppText>
+              </View>
+            )}
+            {isRent && (
+              <View style={[styles.statusTag, { backgroundColor: '#ecfccb' }]}> 
+                <AppText variant="caption" weight="bold" color="#166534">For Rent</AppText>
+              </View>
+            )}
+          </View>
+
           <TouchableOpacity 
             style={[styles.favoriteBtn, { backgroundColor: '#fff' }]}
             activeOpacity={0.8}
+            onPress={toggleFavorite}
           >
-            <Ionicons name="heart" size={18} color="#ff4d4d" />
+            <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={18} color={isFavorite ? "#ff4d4d" : "#94a3b8"} />
           </TouchableOpacity>
         </View>
 
@@ -298,7 +338,7 @@ const PropertyCard = ({ property, onPress, index = 0, variant = 'default' }: Pro
       </Pressable>
     </Animated.View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -343,6 +383,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     zIndex: 2,
+  },
+  badgeRow: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    zIndex: 2,
+  },
+  statusTag: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  availabilityDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#10b981',
+    borderWidth: 2,
+    borderColor: '#fff',
   },
   compactTag: {
     paddingHorizontal: 10,
@@ -486,7 +548,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   priceContainer: {
     flex: 1,
@@ -519,7 +581,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 0,
+    marginBottom: 2,
   },
   title: {
     fontSize: 18,
@@ -545,7 +608,7 @@ const styles = StyleSheet.create({
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 0,
     gap: 4,
   },
   location: {

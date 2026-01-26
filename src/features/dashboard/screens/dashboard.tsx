@@ -5,6 +5,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import authStore from '../../../stores/AuthStore';
 import propertyStore from '../../../stores/PropertyStore';
+import favoriteStore from '../../../stores/FavoriteStore';
 import { adminService } from '../../../services/admin.service';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColor } from '../../../hooks/useThemeColor';
@@ -261,13 +262,28 @@ const UserDashboard = observer(() => {
     </View>
   );
 
-  const FeaturedProjectCard = ({ property, index, onPress }: any) => {
+  const FeaturedProjectCard = observer(({ property, index, onPress }: any) => {
     const theme = useThemeColor();
+    const router = useRouter();
+    const isFavorite = favoriteStore.isFavorite(property.property_id);
+
     const price = property.sale_price 
       ? `₹${property.sale_price >= 10000000 ? (property.sale_price / 10000000).toFixed(2) + ' Cr' : (property.sale_price / 100000).toFixed(2) + ' L'}`
       : property.rent_price 
         ? `₹${property.rent_price.toLocaleString()}/mo`
         : 'Price on Request';
+
+    const isSale = property.is_available_for_sale || property.purpose === 'SALE' || property.purpose === 'BOTH';
+    const isRent = property.is_available_for_rent || property.purpose === 'RENT' || property.purpose === 'BOTH';
+
+    const toggleFavorite = (e: any) => {
+      e.stopPropagation();
+      if (!authStore.isAuthenticated) {
+        router.push('/login');
+        return;
+      }
+      favoriteStore.toggleFavorite(property.property_id);
+    };
 
     return (
       <TouchableOpacity 
@@ -282,22 +298,32 @@ const UserDashboard = observer(() => {
             contentFit="cover"
           />
           <View style={styles.cardTopTags}>
-            <View style={styles.newLaunchTag}>
-              <AppText weight="bold" style={styles.newLaunchText}>NEW LAUNCH</AppText>
-            </View>
-            <View style={styles.reraBadgeSmall}>
-              <AppText weight="bold" style={styles.reraTextSmall}>RERA</AppText>
-            </View>
+            {(isSale || isRent) && (
+              <View style={styles.availabilityDot} />
+            )}
+            {isSale && (
+              <View style={[styles.statusTag, { backgroundColor: '#e0f2ff' }]}>
+                <AppText variant="caption" weight="bold" color="#0369a1" style={{ fontSize: 10 }}>For Sale</AppText>
+              </View>
+            )}
+            {isRent && (
+              <View style={[styles.statusTag, { backgroundColor: '#ecfccb' }]}>
+                <AppText variant="caption" weight="bold" color="#166534" style={{ fontSize: 10 }}>For Rent</AppText>
+              </View>
+            )}
           </View>
-          
-          <TouchableOpacity style={styles.heartBtnSmall}>
-            <Ionicons name="heart-outline" size={20} color="#fff" />
+          <TouchableOpacity 
+            style={styles.heartBtnSmall} 
+            onPress={toggleFavorite}
+            activeOpacity={0.7}
+          >
+            <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={20} color={isFavorite ? "#ff4d4d" : "#fff"} />
           </TouchableOpacity>
 
           <View style={styles.imageBottomOverlay}>
             <View style={styles.possessionTag}>
-              <Ionicons name="time-outline" size={12} color="#fff" />
-              <AppText variant="caption" color="#fff" style={{ fontSize: 10 }}>Possession {new Date().getFullYear() + 2}</AppText>
+              <Ionicons name="home-outline" size={12} color="#fff" />
+              <AppText variant="caption" color="#fff" style={{ fontSize: 10, textTransform: 'capitalize' }}>{property.property_type || 'Property'}</AppText>
             </View>
           </View>
         </View>
@@ -310,9 +336,11 @@ const UserDashboard = observer(() => {
             </View>
           </View>
           
-          <AppText variant="body" weight="bold" color={theme.text} numberOfLines={1}>
-            {property.title}
-          </AppText>
+          {property.title ? (
+            <AppText variant="body" weight="bold" color={theme.text} numberOfLines={1} style={styles.featuredTitleModern}>
+              {property.title}
+            </AppText>
+          ) : null}
           
           <View style={styles.locationRowModern}>
             <Ionicons name="location-sharp" size={14} color={theme.subtext} />
@@ -323,7 +351,7 @@ const UserDashboard = observer(() => {
         </View>
       </TouchableOpacity>
     );
-  };
+  });
 
   return (
     <ScreenLayout
@@ -714,25 +742,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     zIndex: 2,
+    alignItems: 'center',
   },
-  newLaunchTag: {
-    backgroundColor: '#ff3b30',
-    paddingHorizontal: 8,
+  statusTag: {
+    paddingHorizontal: 10,
     paddingVertical: 4,
+    borderRadius: 8,
+  },
+  availabilityDot: {
+    width: 12,
+    height: 12,
     borderRadius: 6,
-  },
-  newLaunchText: {
-    color: '#fff',
-    letterSpacing: 0.5,
-  },
-  reraBadgeSmall: {
     backgroundColor: '#10b981',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  reraTextSmall: {
-    color: '#fff',
+    borderWidth: 2,
+    borderColor: '#fff',
   },
   heartBtnSmall: {
     position: 'absolute',
@@ -775,7 +798,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 2,
   },
   featuredPriceModern: {
     letterSpacing: -0.5,
@@ -789,7 +812,7 @@ const styles = StyleSheet.create({
   },
   featuredTitleModern: {
     letterSpacing: -0.3,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   locationRowModern: {
     flexDirection: 'row',
