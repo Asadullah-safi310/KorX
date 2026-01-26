@@ -3,7 +3,7 @@ import { View, StyleSheet, TextInput, ScrollView, Platform } from 'react-native'
 import { useFormikContext } from 'formik';
 import { useThemeColor } from '../../../../hooks/useThemeColor';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import AppText from '../../../common/AppText';
+import { AppText } from '../../../AppText';
 
 
 // Safe import for react-native-maps

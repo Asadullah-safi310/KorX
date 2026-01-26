@@ -3,7 +3,7 @@ import { View, TextInput, Switch, StyleSheet, ScrollView, Platform } from 'react
 import { useFormikContext } from 'formik';
 import { useThemeColor } from '../../../../hooks/useThemeColor';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import AppText from '../../../common/AppText';
+import { AppText } from '../../../AppText';
 
 const StepPricing = () => {
   const { values, setFieldValue, errors, touched } = useFormikContext<any>();

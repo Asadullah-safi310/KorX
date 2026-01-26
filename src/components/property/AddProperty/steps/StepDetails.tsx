@@ -16,7 +16,7 @@ import { useThemeColor } from '../../../../hooks/useThemeColor';
 import { locationService } from '../../../../services/location.service';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
-import AppText from '../../../common/AppText';
+import { AppText } from '../../../AppText';
 
 const { height } = Dimensions.get('window');
 

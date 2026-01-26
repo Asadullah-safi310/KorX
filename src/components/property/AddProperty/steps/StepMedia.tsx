@@ -16,7 +16,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useThemeColor } from '../../../../hooks/useThemeColor';
 import { validateFileSize, getFileTypeCategory, getImageUrl } from '../../../../utils/mediaUtils';
-import AppText from '../../../common/AppText';
+import { AppText } from '../../../AppText';
 
 const { width } = Dimensions.get('window');
 const GRID_SPACING = 12;

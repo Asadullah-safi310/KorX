@@ -5,7 +5,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColor } from '../../../../hooks/useThemeColor';
 import { getImageUrl } from '../../../../utils/mediaUtils';
 import personStore from '../../../../stores/PersonStore';
-import AppText from '../../../common/AppText';
+import { AppText } from '../../../AppText';
 
 const { width } = Dimensions.get('window');
 

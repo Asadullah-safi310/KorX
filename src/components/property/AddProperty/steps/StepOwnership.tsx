@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
-import { AppText } from '../../../../AppText';
+import { AppText } from '../../../AppText';
 import { useFormikContext } from 'formik';
 import { observer } from 'mobx-react-lite';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -34,7 +34,7 @@ const StepOwnership = observer(() => {
 
   const renderError = (field: string) => {
     if (touched[field] && errors[field]) {
-      return <Text style={[styles.errorText, { color: theme.danger }]}>{errors[field] as string}</Text>;
+      return <AppText variant="tiny" fontWeight="600" style={[{ color: theme.danger }, styles.errorText]}>{errors[field] as string}</AppText>;
     }
     return null;
   };
@@ -43,8 +43,8 @@ const StepOwnership = observer(() => {
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
       {/* Property Type Selection */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.text }]}>Property Category</Text>
-        <Text style={[styles.sectionSubtitle, { color: theme.subtext }]}>What kind of property are you listing?</Text>
+        <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Property Category</AppText>
+        <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>What kind of property are you listing?</AppText>
         
         <View style={styles.grid}>
           {propertyTypes.map((type) => {
@@ -67,9 +67,9 @@ const StepOwnership = observer(() => {
                     color={isActive ? theme.primary : theme.subtext}
                   />
                 </View>
-                <Text style={[styles.typeLabel, { color: isActive ? theme.text : theme.subtext }]}>
+                <AppText variant="tiny" fontWeight="700" style={{ color: isActive ? theme.text : theme.subtext }}>
                   {type.label}
-                </Text>
+                </AppText>
                 {isActive && (
                   <View style={[styles.checkBadge, { backgroundColor: theme.primary }]}>
                     <Ionicons name="checkmark" size={12} color="#fff" />
@@ -84,8 +84,8 @@ const StepOwnership = observer(() => {
 
       {/* Purpose Selection */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.text }]}>Listing Purpose</Text>
-        <Text style={[styles.sectionSubtitle, { color: theme.subtext }]}>Is this for sale or long-term rent?</Text>
+        <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Listing Purpose</AppText>
+        <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>Is this for sale or long-term rent?</AppText>
         
         <View style={styles.purposeRow}>
           {purposes.map((p) => {
@@ -106,9 +106,9 @@ const StepOwnership = observer(() => {
                   size={24}
                   color={isActive ? theme.primary : theme.subtext}
                 />
-                <Text style={[styles.purposeText, { color: isActive ? theme.text : theme.subtext }]}>
+                <AppText fontWeight="700" style={{ color: isActive ? theme.text : theme.subtext }}>
                   For {p.label}
-                </Text>
+                </AppText>
               </TouchableOpacity>
             );
           })}
@@ -120,11 +120,11 @@ const StepOwnership = observer(() => {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={[styles.sectionTitle, { color: theme.text }]}>Assign Agent</Text>
-            <Text style={[styles.sectionSubtitle, { color: theme.subtext }]}>Who will manage this listing?</Text>
+            <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Assign Agent</AppText>
+            <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>Who will manage this listing?</AppText>
           </View>
           <View style={[styles.optionalBadge, { backgroundColor: theme.border + '30' }]}>
-            <Text style={[styles.optionalText, { color: theme.subtext }]}>OPTIONAL</Text>
+            <AppText variant="tiny" fontWeight="700" style={{ color: theme.subtext }}>OPTIONAL</AppText>
           </View>
         </View>
         
@@ -141,7 +141,7 @@ const StepOwnership = observer(() => {
             <View style={[styles.noneAvatar, { backgroundColor: theme.border + '50' }]}>
               <Ionicons name="person-remove-outline" size={24} color={theme.subtext} />
             </View>
-            <Text style={[styles.agentName, { color: !values.agent_id ? theme.text : theme.subtext }]}>No Agent</Text>
+            <AppText variant="tiny" fontWeight="700" style={{ color: !values.agent_id ? theme.text : theme.subtext }}>No Agent</AppText>
           </TouchableOpacity>
 
           {personStore.agents.map((agent) => {
@@ -158,10 +158,10 @@ const StepOwnership = observer(() => {
                 onPress={() => setFieldValue('agent_id', String(agent.user_id))}
               >
                 <Avatar user={agent} size="md" />
-                <Text style={[styles.agentName, { color: isActive ? theme.text : theme.subtext }]} numberOfLines={1}>
+                <AppText variant="tiny" fontWeight="700" style={{ color: isActive ? theme.text : theme.subtext }} numberOfLines={1}>
                   {agent.full_name.split(' ')[0]}
-                </Text>
-                <Text style={[styles.agentRole, { color: theme.subtext }]}>Agent</Text>
+                </AppText>
+                <AppText variant="tiny" fontWeight="500" style={{ color: theme.subtext }}>Agent</AppText>
               </TouchableOpacity>
             );
           })}
