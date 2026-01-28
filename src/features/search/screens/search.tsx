@@ -15,7 +15,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useThemeColor } from '../../../hooks/useThemeColor';
+import { useTheme } from '../../../theme';
 import { locationService } from '../../../services/location.service';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { BlurView } from 'expo-blur';
@@ -27,7 +27,7 @@ type SelectionLevel = 'city' | 'district' | 'area';
 
 const SearchScreen = () => {
   const router = useRouter();
-  const theme = useThemeColor();
+  const { colors: theme, theme: themeMode } = useTheme();
   const insets = useSafeAreaInsets();
   
   // State
@@ -207,7 +207,7 @@ const SearchScreen = () => {
           </View>
           {isSelected ? (
             <View style={[styles.selectedBadge, { backgroundColor: theme.primary }]}>
-               <Ionicons name="checkmark" size={14} color="#fff" />
+               <Ionicons name="checkmark" size={14} color={theme.white} />
             </View>
           ) : (
             <Ionicons name="chevron-forward" size={18} color={theme.border} />
@@ -223,7 +223,7 @@ const SearchScreen = () => {
       style={{ flex: 1, backgroundColor: theme.background }}
     >
       <View style={{ flex: 1 }}>
-        <ExpoStatusBar style="dark" />
+        <ExpoStatusBar style={themeMode === 'dark' ? 'light' : 'dark'} />
         
         {/* Modern Premium Header */}
         <View style={[styles.headerWrapper, { backgroundColor: theme.background }]}>
@@ -240,7 +240,7 @@ const SearchScreen = () => {
                     onPress={() => setActiveType(type)}
                     style={[styles.tab, activeType === type && { backgroundColor: theme.primary }]}
                   >
-                    <Text style={[styles.tabText, { color: activeType === type ? '#fff' : theme.subtext }]}>
+                    <Text style={[styles.tabText, { color: activeType === type ? theme.black : theme.subtext }]}>
                       {type}
                     </Text>
                   </Pressable>
@@ -321,12 +321,12 @@ const SearchScreen = () => {
               activeOpacity={0.9}
             >
               <View style={styles.fabIcon}>
-                <Ionicons name="location" size={20} color="#fff" />
+                <Ionicons name="location" size={20} color={theme.white} />
               </View>
               <Text style={styles.fabText}>
                 Explore {selectedArea?.name || selectedDistrict?.name || selectedCity.name}
               </Text>
-              <Ionicons name="arrow-forward" size={18} color="rgba(255,255,255,0.7)" />
+              <Ionicons name="arrow-forward" size={18} color={theme.white + 'B3'} />
             </TouchableOpacity>
           </BlurView>
         )}

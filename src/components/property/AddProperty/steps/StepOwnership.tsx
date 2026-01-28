@@ -34,7 +34,7 @@ const StepOwnership = observer(() => {
 
   const renderError = (field: string) => {
     if (touched[field] && errors[field]) {
-      return <AppText variant="tiny" fontWeight="600" style={[{ color: theme.danger }, styles.errorText]}>{errors[field] as string}</AppText>;
+      return <AppText variant="caption" weight="semiBold" style={[{ color: theme.danger }, styles.errorText]}>{errors[field] as string}</AppText>;
     }
     return null;
   };
@@ -43,8 +43,8 @@ const StepOwnership = observer(() => {
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       {/* Property Type Selection */}
       <View style={styles.section}>
-        <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Property Category</AppText>
-        <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>What kind of property are you listing?</AppText>
+        <AppText variant="h2" weight="bold" style={{ color: theme.text }}>Property Category</AppText>
+        <AppText variant="small" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>What kind of property are you listing?</AppText>
         
         <View style={styles.grid}>
           {propertyTypes.map((type) => {
@@ -67,7 +67,7 @@ const StepOwnership = observer(() => {
                     color={isActive ? theme.primary : theme.subtext}
                   />
                 </View>
-                <AppText variant="tiny" fontWeight="700" style={{ color: isActive ? theme.text : theme.subtext }}>
+                <AppText variant="tiny" weight="bold" style={{ color: isActive ? theme.text : theme.subtext }}>
                   {type.label}
                 </AppText>
                 {isActive && (
@@ -84,8 +84,8 @@ const StepOwnership = observer(() => {
 
       {/* Purpose Selection */}
       <View style={styles.section}>
-        <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Listing Purpose</AppText>
-        <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>Is this for sale or long-term rent?</AppText>
+        <AppText variant="h2" weight="bold" style={{ color: theme.text }}>Listing Purpose</AppText>
+        <AppText variant="small" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>Is this for sale or long-term rent?</AppText>
         
         <View style={styles.purposeRow}>
           {purposes.map((p) => {
@@ -106,7 +106,7 @@ const StepOwnership = observer(() => {
                   size={24}
                   color={isActive ? theme.primary : theme.subtext}
                 />
-                <AppText fontWeight="700" style={{ color: isActive ? theme.text : theme.subtext }}>
+                <AppText weight="bold" style={{ color: isActive ? theme.text : theme.subtext }}>
                   For {p.label}
                 </AppText>
               </TouchableOpacity>
@@ -120,11 +120,11 @@ const StepOwnership = observer(() => {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <View>
-            <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Assign Agent</AppText>
-            <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>Who will manage this listing?</AppText>
+            <AppText variant="h2" weight="bold" style={{ color: theme.text }}>Assign Agent</AppText>
+            <AppText variant="small" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>Who will manage this listing?</AppText>
           </View>
           <View style={[styles.optionalBadge, { backgroundColor: theme.border + '30' }]}>
-            <AppText variant="tiny" fontWeight="700" style={{ color: theme.subtext }}>OPTIONAL</AppText>
+            <AppText variant="tiny" weight="bold" style={{ color: theme.subtext }}>OPTIONAL</AppText>
           </View>
         </View>
         
@@ -141,7 +141,7 @@ const StepOwnership = observer(() => {
             <View style={[styles.noneAvatar, { backgroundColor: theme.border + '50' }]}>
               <Ionicons name="person-remove-outline" size={24} color={theme.subtext} />
             </View>
-            <AppText variant="tiny" fontWeight="700" style={{ color: !values.agent_id ? theme.text : theme.subtext }}>No Agent</AppText>
+            <AppText variant="tiny" weight="bold" style={{ color: !values.agent_id ? theme.text : theme.subtext }}>No Agent</AppText>
           </TouchableOpacity>
 
           {personStore.agents.map((agent) => {
@@ -158,10 +158,10 @@ const StepOwnership = observer(() => {
                 onPress={() => setFieldValue('agent_id', String(agent.user_id))}
               >
                 <Avatar user={agent} size="md" />
-                <AppText variant="tiny" fontWeight="700" style={{ color: isActive ? theme.text : theme.subtext }} numberOfLines={1}>
+                <AppText variant="tiny" weight="bold" style={{ color: isActive ? theme.text : theme.subtext }} numberOfLines={1}>
                   {agent.full_name.split(' ')[0]}
                 </AppText>
-                <AppText variant="tiny" fontWeight="500" style={{ color: theme.subtext }}>Agent</AppText>
+                <AppText variant="tiny" weight="medium" style={{ color: theme.subtext }}>Agent</AppText>
               </TouchableOpacity>
             );
           })}
@@ -185,13 +185,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '800',
-    letterSpacing: -0.5,
-  },
   sectionSubtitle: {
-    fontSize: 14,
     marginBottom: 16,
     marginTop: 2,
   },
@@ -199,10 +193,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
-  },
-  optionalText: {
-    fontSize: 10,
-    fontWeight: '700',
   },
   grid: {
     flexDirection: 'row',
@@ -226,10 +216,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
-  },
-  typeLabel: {
-    fontSize: 13,
-    fontWeight: '700',
   },
   checkBadge: {
     position: 'absolute',
@@ -255,10 +241,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 12,
   },
-  purposeText: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
   agentScroll: {
     gap: 12,
     paddingRight: 20,
@@ -279,20 +261,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  agentName: {
-    fontSize: 13,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  agentRole: {
-    fontSize: 11,
-    fontWeight: '500',
-  },
   errorText: {
-    fontSize: 12,
     marginTop: 8,
     marginLeft: 4,
-    fontWeight: '600',
   },
 });
 

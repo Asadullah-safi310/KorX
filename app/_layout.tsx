@@ -8,13 +8,24 @@ import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 
 import themeStore from "../src/stores/ThemeStore";
-import { fontAssets } from "../src/theme";
+import { fontAssets, ThemeProvider, useTheme } from "../src/theme";
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
+const AppContent = () => {
+  const { theme } = useTheme();
+  return (
+    <>
+      <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+    </>
+  );
+};
+
 export default function RootLayout() {
-  const systemColorScheme = useColorScheme();
   const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
@@ -40,15 +51,9 @@ export default function RootLayout() {
   
   return (
     <SafeAreaProvider>
-      <Observer>
-        {() => {
-          const currentTheme = themeStore.theme === 'system' ? systemColorScheme : themeStore.theme;
-          return <StatusBar style={currentTheme === 'dark' ? 'light' : 'dark'} />;
-        }}
-      </Observer>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }

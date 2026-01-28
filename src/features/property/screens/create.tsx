@@ -57,7 +57,11 @@ const PropertyCreateScreen = observer(() => {
             rent_price: property.rent_price?.toString() || '',
             media: [],
             existingMedia: (property.photos || []).map((p: string) => ({ url: p, type: 'photo' })),
-            amenities: property.amenities || [],
+            amenities: Array.isArray(property.amenities) 
+              ? property.amenities 
+              : (typeof property.amenities === 'string' && property.amenities.startsWith('[')
+                  ? JSON.parse(property.amenities) 
+                  : []),
           });
         }
       } catch {

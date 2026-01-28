@@ -10,6 +10,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets, type Edge } from 'react-native-safe-area-context';
+import { useTheme } from '../theme';
 
 type ScreenLayoutProps = {
   children: React.ReactNode;
@@ -25,7 +26,7 @@ type ScreenLayoutProps = {
 
 const ScreenLayout = ({
   children,
-  backgroundColor = '#fff',
+  backgroundColor,
   edges = ['top', 'bottom', 'left', 'right'],
   scrollable = false,
   scrollProps = {},
@@ -34,6 +35,8 @@ const ScreenLayout = ({
   bottomSpacing = 90,
   keyboardAware = false,
 }: ScreenLayoutProps) => {
+  const { colors } = useTheme();
+  const bgColor = backgroundColor || colors.background;
   const insets = useSafeAreaInsets();
   const bottomInset = Math.max(insets.bottom, 10);
   const scrollContainerStyles = scrollable
@@ -64,7 +67,7 @@ const ScreenLayout = ({
 
   if (keyboardAware) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor }]} edges={edges}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: bgColor }]} edges={edges}>
         <KeyboardAvoidingView
           style={styles.flex}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -77,7 +80,7 @@ const ScreenLayout = ({
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor }]} edges={edges}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: bgColor }]} edges={edges}>
       {layoutContent}
     </SafeAreaView>
   );

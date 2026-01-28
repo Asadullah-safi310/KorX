@@ -7,6 +7,7 @@ import { observer } from 'mobx-react-lite';
 import { getImageUrl } from '../utils/mediaUtils';
 import authStore from '../stores/AuthStore';
 import favoriteStore from '../stores/FavoriteStore';
+import { shareProperty } from '../utils/shareUtils';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
@@ -127,7 +128,7 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
             key={i} 
             style={[
               styles.dot, 
-              { backgroundColor: i === active ? '#fff' : 'rgba(255,255,255,0.5)' },
+              { backgroundColor: i === active ? themeColors.white : 'rgba(255,255,255,0.5)' },
               i === active && { width: 12 }
             ]} 
           />
@@ -191,11 +192,22 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
             <PaginationDots length={photos.length} active={activeIndex} />
 
             <TouchableOpacity 
+              style={[styles.compactFavorite, { right: 52 }]} 
+              onPress={(e) => {
+                e.stopPropagation();
+                shareProperty(property);
+              }}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="share-social-outline" size={18} color={themeColors.white} />
+            </TouchableOpacity>
+
+            <TouchableOpacity 
               style={styles.compactFavorite} 
               onPress={toggleFavorite}
               activeOpacity={0.7}
             >
-              <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={18} color={isFavorite ? "#ff4d4d" : "#fff"} />
+              <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={18} color={isFavorite ? themeColors.danger : themeColors.white} />
             </TouchableOpacity>
           </View>
 
@@ -267,7 +279,7 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
 
           {photos.length > 1 && (
             <View style={styles.imageCountBadge}>
-              <AppText variant="caption" weight="bold" color="#fff">{activeIndex + 1}/{photos.length}</AppText>
+              <AppText variant="caption" weight="bold" color={themeColors.white}>{activeIndex + 1}/{photos.length}</AppText>
             </View>
           )}
 
@@ -275,7 +287,7 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
           
           <View style={styles.badgeRow}>
             {(isSale || isRent) && (
-              <View style={styles.availabilityDot} />
+              <View style={[styles.availabilityDot, { borderColor: themeColors.white, backgroundColor: themeColors.success }]} />
             )}
             {isSale && (
               <View style={[styles.statusTag, { backgroundColor: '#e0f2ff' }]}> 
@@ -290,11 +302,22 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
           </View>
 
           <TouchableOpacity 
-            style={[styles.favoriteBtn, { backgroundColor: '#fff' }]}
+            style={[styles.favoriteBtn, { right: 62, backgroundColor: themeColors.white }]}
+            activeOpacity={0.8}
+            onPress={(e) => {
+              e.stopPropagation();
+              shareProperty(property);
+            }}
+          >
+            <Ionicons name="share-social-outline" size={18} color={themeColors.mutedText} />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.favoriteBtn, { backgroundColor: themeColors.white }]}
             activeOpacity={0.8}
             onPress={toggleFavorite}
           >
-            <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={18} color={isFavorite ? "#ff4d4d" : "#94a3b8"} />
+            <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={18} color={isFavorite ? themeColors.danger : themeColors.mutedText} />
           </TouchableOpacity>
         </View>
 
@@ -304,12 +327,12 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
             <View style={styles.priceContainer}>
               <AppText variant="h3" weight="bold" numberOfLines={1}> 
                 {isSale ? formatPrice(property.sale_price) : formatPrice(property.rent_price)}
-                <AppText variant="small" color="#94a3b8"> / {isRent && !isSale ? 'mo' : 'yr'}</AppText>
+                <AppText variant="small" color={themeColors.mutedText}> / {isRent && !isSale ? 'mo' : 'yr'}</AppText>
               </AppText>
             </View>
-            <View style={styles.ratingContainer}>
-              <Ionicons name="star" size={16} color="#fbbf24" />
-              <AppText variant="small" weight="bold" style={{ marginLeft: 4 }}>4.0</AppText>
+            <View style={[styles.ratingContainer, { backgroundColor: '#fffbeb' }]}>
+              <Ionicons name="star" size={16} color={themeColors.warning} />
+              <AppText variant="small" weight="bold" style={{ marginLeft: 4, color: '#b45309' }}>4.0</AppText>
             </View>
           </View>
 
@@ -320,19 +343,19 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
             
             <View style={styles.featureRow}>
               <View style={styles.featureItem}>
-                <Ionicons name="bed-outline" size={18} color="#94a3b8" />
+                <Ionicons name="bed-outline" size={18} color={themeColors.mutedText} />
                 <AppText variant="body" weight="medium" style={{ marginLeft: 6 }}>{property.bedrooms || 0}</AppText>
               </View>
               <View style={styles.featureItem}>
-                <MaterialCommunityIcons name="bathtub-outline" size={18} color="#94a3b8" />
+                <MaterialCommunityIcons name="bathtub-outline" size={18} color={themeColors.mutedText} />
                 <AppText variant="body" weight="medium" style={{ marginLeft: 6 }}>{property.bathrooms || 0}</AppText>
               </View>
             </View>
           </View>
           
           <View style={styles.locationRow}>
-            <Ionicons name="location-outline" size={18} color="#94a3b8" />
-            <AppText variant="body" color={themeColors.subtext} numberOfLines={1} style={{ marginLeft: 6, flex: 1 }}>
+            <Ionicons name="location-outline" size={18} color={themeColors.mutedText} />
+            <AppText variant="body" color={themeColors.subtext || themeColors.mutedText} numberOfLines={1} style={{ marginLeft: 6, flex: 1 }}>
               {fullAddress || 'Location details'}
             </AppText>
           </View>
@@ -346,7 +369,6 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 16,
     marginBottom: 24,
-    backgroundColor: '#fff',
     overflow: 'hidden',
   },
   compactCard: {
@@ -404,9 +426,7 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#10b981',
     borderWidth: 2,
-    borderColor: '#fff',
   },
   compactTag: {
     paddingHorizontal: 10,
@@ -532,7 +552,6 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',

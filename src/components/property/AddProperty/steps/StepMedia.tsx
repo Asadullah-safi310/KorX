@@ -135,7 +135,7 @@ const StepMedia = () => {
               size={32} 
               color={theme.primary} 
             />
-            <AppText variant="tiny" fontWeight="600" style={[{ color: theme.text }, styles.fileName]} numberOfLines={1}>{item.name}</AppText>
+            <AppText variant="tiny" weight="semiBold" style={[{ color: theme.text }, styles.fileName]} numberOfLines={1}>{item.name}</AppText>
           </View>
         )}
         
@@ -160,7 +160,7 @@ const StepMedia = () => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Visual Assets</AppText>
+      <AppText variant="h2" weight="bold" style={{ color: theme.text }}>Visual Assets</AppText>
       <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
         Properties with 5+ high-quality photos get 3x more inquiries.
       </AppText>
@@ -174,8 +174,8 @@ const StepMedia = () => {
           <View style={[styles.uploadIconCircle, { backgroundColor: theme.primary }]}>
             <Ionicons name="camera" size={28} color="#fff" />
           </View>
-          <AppText variant="title" fontWeight="700" style={{ color: theme.text }}>Add Property Photos</AppText>
-          <AppText variant="caption" fontWeight="500" style={{ color: theme.subtext }}>Upload up to 15 images</AppText>
+          <AppText variant="title" weight="bold" style={{ color: theme.text }}>Add Property Photos</AppText>
+          <AppText variant="caption" weight="medium" style={{ color: theme.subtext }}>Upload up to 15 images</AppText>
         </TouchableOpacity>
         
         <View style={styles.secondaryUploads}>
@@ -185,7 +185,7 @@ const StepMedia = () => {
             activeOpacity={0.7}
           >
             <Ionicons name="videocam-outline" size={24} color={theme.primary} />
-            <AppText variant="tiny" fontWeight="600" style={{ color: theme.text }}>Add Video</AppText>
+            <AppText variant="tiny" weight="semiBold" style={{ color: theme.text }}>Add Video</AppText>
           </TouchableOpacity>
           
           <TouchableOpacity 
@@ -194,7 +194,7 @@ const StepMedia = () => {
             activeOpacity={0.7}
           >
             <Ionicons name="document-attach-outline" size={24} color={theme.primary} />
-            <AppText variant="tiny" fontWeight="600" style={{ color: theme.text }}>Documents</AppText>
+            <AppText variant="tiny" weight="semiBold" style={{ color: theme.text }}>Documents</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -202,7 +202,7 @@ const StepMedia = () => {
       {loading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator color={theme.primary} />
-          <AppText variant="caption" fontWeight="500" style={{ color: theme.subtext }}>Processing files...</AppText>
+          <AppText variant="caption" weight="medium" style={{ color: theme.subtext }}>Processing files...</AppText>
         </View>
       )}
 
@@ -213,14 +213,14 @@ const StepMedia = () => {
         {(!values.existingMedia?.length && !values.media?.length) && (
           <View style={[styles.emptyGrid, { backgroundColor: theme.border + '10' }]}>
             <MaterialCommunityIcons name="image-multiple-outline" size={40} color={theme.border} />
-            <AppText variant="caption" fontWeight="600" style={{ color: theme.subtext }}>No media added yet</AppText>
+            <AppText variant="caption" weight="semiBold" style={{ color: theme.subtext }}>No media added yet</AppText>
           </View>
         )}
       </View>
 
       {touched.media && errors.media && (
         <View style={[styles.errorBox, { backgroundColor: theme.danger + '10' }]}>
-          <AppText variant="caption" fontWeight="600" style={{ color: theme.danger }}>{errors.media as string}</AppText>
+          <AppText variant="caption" weight="semiBold" style={{ color: theme.danger }}>{errors.media as string}</AppText>
         </View>
       )}
     </ScrollView>
@@ -322,7 +322,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   fileName: { 
-    fontSize: 10, 
     marginTop: 6, 
     textAlign: 'center',
   },

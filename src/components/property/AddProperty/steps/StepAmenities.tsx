@@ -39,8 +39,8 @@ const StepAmenities = observer(() => {
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <View style={styles.section}>
-        <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Property Amenities</AppText>
-        <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>Select all the amenities available in this property.</AppText>
+        <AppText variant="h2" weight="bold" style={{ color: theme.text }}>Property Amenities</AppText>
+        <AppText variant="small" color={theme.subtext} style={styles.sectionSubtitle}>Select all the amenities available in this property.</AppText>
         
         <View style={styles.grid}>
           {amenitiesList.map((item) => {
@@ -65,7 +65,7 @@ const StepAmenities = observer(() => {
                     color={isActive ? theme.primary : theme.subtext}
                   />
                 </View>
-                <AppText variant="tiny" fontWeight="700" style={{ color: isActive ? theme.text : theme.subtext, textAlign: 'center' }}>
+                <AppText variant="tiny" weight="bold" color={isActive ? theme.text : theme.subtext} style={{ textAlign: 'center' }}>
                   {item.label}
                 </AppText>
                 {isActive && (
@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   sectionSubtitle: {
-    fontSize: 14,
     marginBottom: 16,
     marginTop: 2,
   },

@@ -12,7 +12,7 @@ import {
   Dimensions
 } from 'react-native';
 import { useFormikContext } from 'formik';
-import { useThemeColor } from '../../../../hooks/useThemeColor';
+import { useThemeColor, useCurrentTheme } from '../../../../hooks/useThemeColor';
 import { locationService } from '../../../../services/location.service';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
@@ -25,9 +25,9 @@ const CustomSlider = ({ label, value, onChange, min = 0, max = 10 }: any) => {
   return (
     <View style={styles.sliderContainer}>
       <View style={styles.sliderHeader}>
-        <AppText variant="caption" fontWeight="600" style={{ color: theme.text }}>{label}</AppText>
+        <AppText variant="caption" weight="semiBold" style={{ color: theme.text }}>{label}</AppText>
         <View style={[styles.sliderBadge, { backgroundColor: theme.primary + '15' }]}>
-          <AppText variant="caption" fontWeight="800" style={{ color: theme.primary }}>
+          <AppText variant="caption" weight="bold" style={{ color: theme.primary }}>
             {value === max ? `${max}+` : value}
           </AppText>
         </View>
@@ -44,7 +44,7 @@ const CustomSlider = ({ label, value, onChange, min = 0, max = 10 }: any) => {
             ]}
             onPress={() => onChange(num)}
           >
-            <AppText fontWeight="700" style={[{ color: theme.text }, value === num && { color: '#fff' }]}>
+            <AppText weight="bold" style={[{ color: theme.text }, value === num && { color: '#fff' }]}>
               {num === max ? `${max}+` : num}
             </AppText>
           </TouchableOpacity>
@@ -56,13 +56,14 @@ const CustomSlider = ({ label, value, onChange, min = 0, max = 10 }: any) => {
 
 const Selector = ({ label, value, options, onSelect, placeholder, error, loading, icon }: any) => {
   const theme = useThemeColor();
+  const currentTheme = useCurrentTheme();
   const [modalVisible, setModalVisible] = useState(false);
 
   const selectedOption = options.find((opt: any) => String(opt.id) === String(value));
 
   return (
     <View style={styles.inputGroup}>
-      <AppText variant="caption" fontWeight="600" style={{ color: theme.text }}>{label}</AppText>
+      <AppText variant="caption" weight="semiBold" style={{ color: theme.text }}>{label}</AppText>
       <TouchableOpacity
         activeOpacity={0.7}
         style={[
@@ -78,21 +79,21 @@ const Selector = ({ label, value, options, onSelect, placeholder, error, loading
           {loading ? (
             <ActivityIndicator size="small" color={theme.primary} />
           ) : (
-            <AppText fontWeight="500" style={{ color: selectedOption ? theme.text : theme.subtext }}>
+            <AppText weight="medium" style={{ color: selectedOption ? theme.text : theme.subtext }}>
               {selectedOption ? selectedOption.name : placeholder}
             </AppText>
           )}
         </View>
         <Ionicons name="chevron-down" size={18} color={theme.subtext} />
       </TouchableOpacity>
-      {error && <AppText variant="tiny" fontWeight="600" style={[{ color: theme.danger }, styles.errorText]}>{error}</AppText>}
+      {error && <AppText variant="caption" weight="semiBold" style={[{ color: theme.danger }, styles.errorText]}>{error}</AppText>}
 
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
-        <BlurView intensity={20} tint={theme.dark ? 'dark' : 'light'} style={styles.modalOverlay}>
+        <BlurView intensity={20} tint={currentTheme} style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: theme.background }]}>
             <View style={styles.modalIndicator} />
             <View style={[styles.modalHeader, { borderBottomColor: theme.border + '20' }]}>
-              <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Select {label}</AppText>
+              <AppText variant="h2" weight="bold" style={{ color: theme.text }}>Select {label}</AppText>
               <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalCloseBtn}>
                 <Ionicons name="close" size={24} color={theme.text} />
               </TouchableOpacity>
@@ -111,7 +112,7 @@ const Selector = ({ label, value, options, onSelect, placeholder, error, loading
                   }}
                 >
                   <AppText 
-                    fontWeight={String(item.id) === String(value) ? '700' : '500'}
+                    weight={String(item.id) === String(value) ? 'bold' : 'medium'}
                     style={[
                       { color: theme.text },
                       String(item.id) === String(value) && { color: theme.primary }
@@ -127,7 +128,7 @@ const Selector = ({ label, value, options, onSelect, placeholder, error, loading
               ListEmptyComponent={
                 <View style={styles.emptyList}>
                   <MaterialCommunityIcons name="database-off-outline" size={48} color={theme.subtext} />
-                  <AppText fontWeight="600" style={{ color: theme.subtext }}>No options available</AppText>
+                  <AppText weight="semiBold" style={{ color: theme.subtext }}>No options available</AppText>
                 </View>
               }
             />
@@ -211,20 +212,20 @@ const StepDetails = () => {
 
   const renderError = (field: string) => {
     if (touched[field] && errors[field]) {
-      return <AppText variant="tiny" fontWeight="600" style={[{ color: theme.danger }, styles.errorText]}>{errors[field] as string}</AppText>;
+      return <AppText variant="caption" weight="semiBold" style={[{ color: theme.danger }, styles.errorText]}>{errors[field] as string}</AppText>;
     }
     return null;
   };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Property Details</AppText>
-      <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
+      <AppText variant="h2" weight="bold" style={{ color: theme.text }}>Property Details</AppText>
+      <AppText variant="small" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
         Tell us more about the property&apos;s size and features.
       </AppText>
 
       <View style={styles.inputGroup}>
-        <AppText variant="caption" fontWeight="600" style={{ color: theme.text }}>Listing Title</AppText>
+        <AppText variant="caption" weight="semiBold" style={{ color: theme.text }}>Listing Title</AppText>
         <View style={[styles.textInputContainer, { backgroundColor: theme.card, borderColor: theme.border }]}>
           <MaterialCommunityIcons name="format-title" size={20} color={theme.subtext} style={styles.inputIcon} />
           <TextInput
@@ -239,7 +240,7 @@ const StepDetails = () => {
       </View>
 
       <View style={styles.inputGroup}>
-        <AppText variant="caption" fontWeight="600" style={{ color: theme.text }}>Property Description</AppText>
+        <AppText variant="caption" weight="semiBold" style={{ color: theme.text }}>Property Description</AppText>
         <View style={[styles.textInputContainer, styles.textAreaContainer, { backgroundColor: theme.card, borderColor: theme.border }]}>
           <TextInput
             style={[styles.input, styles.textArea, { color: theme.text }]}
@@ -257,7 +258,7 @@ const StepDetails = () => {
 
       <View style={styles.row}>
         <View style={[styles.inputGroup, { flex: 1 }]}>
-          <AppText variant="caption" fontWeight="600" style={{ color: theme.text }}>Total Area</AppText>
+          <AppText variant="caption" weight="semiBold" style={{ color: theme.text }}>Total Area</AppText>
           <View style={[styles.textInputContainer, { backgroundColor: theme.card, borderColor: theme.border }]}>
             <MaterialCommunityIcons name="ruler-square" size={20} color={theme.subtext} style={styles.inputIcon} />
             <TextInput
@@ -269,7 +270,7 @@ const StepDetails = () => {
               keyboardType="numeric"
             />
             <View style={[styles.unitBadge, { backgroundColor: theme.border + '30' }]}>
-              <AppText variant="tiny" fontWeight="700" style={{ color: theme.subtext }}>Sq. Ft.</AppText>
+              <AppText variant="tiny" weight="bold" style={{ color: theme.subtext }}>Sq. Ft.</AppText>
             </View>
           </View>
           {renderError('area_size')}
@@ -293,7 +294,7 @@ const StepDetails = () => {
 
       <View style={styles.divider} />
 
-      <AppText variant="h2" fontWeight="800" style={[{ color: theme.text }, { marginTop: 10 }]}>Location Information</AppText>
+      <AppText variant="h2" weight="bold" style={[{ color: theme.text }, { marginTop: 10 }]}>Location Information</AppText>
       <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
         Where is this property located?
       </AppText>
@@ -338,7 +339,7 @@ const StepDetails = () => {
       </View>
 
       <View style={styles.inputGroup}>
-        <AppText variant="caption" fontWeight="600" style={{ color: theme.text }}>Exact Address</AppText>
+        <AppText variant="caption" weight="semiBold" style={{ color: theme.text }}>Exact Address</AppText>
         <View style={[styles.textInputContainer, { backgroundColor: theme.card, borderColor: theme.border }]}>
           <Ionicons name="location-outline" size={20} color={theme.subtext} style={styles.inputIcon} />
           <TextInput
@@ -361,9 +362,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 10,
   },
-  sectionTitle: { 
-    letterSpacing: -0.5,
-  },
   sectionSubtitle: { 
     marginBottom: 20,
     marginTop: 2,
@@ -371,9 +369,6 @@ const styles = StyleSheet.create({
   inputGroup: { 
     marginBottom: 20,
     gap: 8,
-  },
-  label: { 
-    marginLeft: 4,
   },
   textInputContainer: {
     flexDirection: 'row',
@@ -394,7 +389,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: 'Inter-Medium',
   },
   textArea: {
     textAlignVertical: 'top',

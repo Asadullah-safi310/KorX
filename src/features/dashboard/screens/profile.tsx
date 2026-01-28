@@ -115,7 +115,7 @@ const ProfileScreen = observer(() => {
       }}
     >
       {/* Profile Header Card */}
-      <View style={[styles.premiumHeaderCard, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
+      <View style={[styles.premiumHeaderCard, { backgroundColor: themeColors.white, borderColor: themeColors.border }]}>
         <View style={styles.headerBackground}>
           <View style={[styles.bgCircle, { backgroundColor: themeColors.primary + '08', top: -50, right: -50 }]} />
           <View style={[styles.bgCircle, { backgroundColor: themeColors.primary + '05', bottom: -80, left: -20, width: 200, height: 200 }]} />

@@ -44,7 +44,7 @@ const StepLocation = () => {
 
   const renderError = (field: string) => {
     if (touched[field] && errors[field]) {
-      return <AppText variant="tiny" fontWeight="600" style={[{ color: theme.danger }, styles.errorText]}>{errors[field] as string}</AppText>;
+      return <AppText variant="caption" weight="semiBold" style={[{ color: theme.danger }, styles.errorText]}>{errors[field] as string}</AppText>;
     }
     return null;
   };
@@ -53,8 +53,8 @@ const StepLocation = () => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Map Placement</AppText>
-      <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
+      <AppText variant="h2" weight="bold" style={{ color: theme.text }}>Map Placement</AppText>
+      <AppText variant="small" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
         {isMapAvailable 
           ? 'Pin the exact location of your property on the map.' 
           : 'Interactive map is currently unavailable. Please provide coordinates.'}
@@ -80,7 +80,7 @@ const StepLocation = () => {
             <View style={[styles.placeholderIcon, { backgroundColor: theme.primary + '10' }]}>
               <MaterialCommunityIcons name="map-marker-radius-outline" size={48} color={theme.primary} />
             </View>
-            <AppText variant="title" fontWeight="700" style={{ color: theme.text }}>Map Preview Restricted</AppText>
+            <AppText variant="title" weight="bold" style={{ color: theme.text }}>Map Preview Restricted</AppText>
             <AppText variant="caption" style={[{ color: theme.subtext }, styles.placeholderSubtext]}>
               Manual coordinate entry is required.
             </AppText>
@@ -91,7 +91,7 @@ const StepLocation = () => {
           <View style={styles.mapOverlay}>
             <View style={[styles.overlayBadge, { backgroundColor: 'rgba(0,0,0,0.6)' }]}>
               <Ionicons name="information-circle" size={14} color="#fff" />
-              <AppText variant="tiny" fontWeight="600" style={{ color: '#fff' }}>Tap to place marker</AppText>
+              <AppText variant="tiny" weight="semiBold" style={{ color: '#fff' }}>Tap to place marker</AppText>
             </View>
           </View>
         )}
@@ -99,7 +99,7 @@ const StepLocation = () => {
       
       <View style={styles.coordsGrid}>
         <View style={styles.coordBox}>
-          <AppText variant="tiny" fontWeight="700" style={[{ color: theme.subtext }, styles.coordLabel]}>LATITUDE</AppText>
+          <AppText variant="tiny" weight="bold" style={[{ color: theme.subtext }, styles.coordLabel]}>LATITUDE</AppText>
           <View style={[styles.coordInput, { backgroundColor: theme.card, borderColor: theme.border }]}>
             <TextInput
               style={[styles.input, { color: theme.text }]}
@@ -112,7 +112,7 @@ const StepLocation = () => {
           </View>
         </View>
         <View style={styles.coordBox}>
-          <AppText variant="tiny" fontWeight="700" style={[{ color: theme.subtext }, styles.coordLabel]}>LONGITUDE</AppText>
+          <AppText variant="tiny" weight="bold" style={[{ color: theme.subtext }, styles.coordLabel]}>LONGITUDE</AppText>
           <View style={[styles.coordInput, { backgroundColor: theme.card, borderColor: theme.border }]}>
             <TextInput
               style={[styles.input, { color: theme.text }]}
@@ -130,7 +130,7 @@ const StepLocation = () => {
       
       <View style={[styles.tipBox, { backgroundColor: theme.primary + '08', borderColor: theme.primary + '20' }]}>
         <Ionicons name="bulb-outline" size={20} color={theme.primary} />
-        <AppText variant="caption" fontWeight="500" style={[{ color: theme.text }, styles.tipText]}>
+        <AppText variant="caption" weight="medium" style={[{ color: theme.text }, styles.tipText]}>
           Precise location helps buyers find your property and increases trust in your listing.
         </AppText>
       </View>
@@ -143,9 +143,6 @@ const styles = StyleSheet.create({
     paddingBottom: 120,
     paddingHorizontal: 20,
     paddingTop: 10,
-  },
-  sectionTitle: { 
-    letterSpacing: -0.5,
   },
   sectionSubtitle: { 
     marginBottom: 20,
@@ -176,9 +173,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  placeholderText: {
-    marginBottom: 4,
-  },
   placeholderSubtext: {
     textAlign: 'center',
   },
@@ -194,8 +188,6 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 20,
     gap: 6,
-  },
-  overlayText: {
   },
   coordsGrid: {
     flexDirection: 'row',
@@ -219,7 +211,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
   },
   tipBox: {
     flexDirection: 'row',

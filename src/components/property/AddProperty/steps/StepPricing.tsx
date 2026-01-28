@@ -11,7 +11,7 @@ const StepPricing = () => {
 
   const renderError = (field: string) => {
     if (touched[field] && errors[field]) {
-      return <AppText variant="tiny" fontWeight="600" style={[{ color: theme.danger }, styles.errorText]}>{errors[field] as string}</AppText>;
+      return <AppText variant="caption" weight="semiBold" style={[{ color: theme.danger }, styles.errorText]}>{errors[field] as string}</AppText>;
     }
     return null;
   };
@@ -32,8 +32,8 @@ const StepPricing = () => {
             />
           </View>
           <View>
-            <AppText fontWeight="700" style={[{ color: theme.text }, styles.optionLabel]}>{label}</AppText>
-            <AppText variant="tiny" fontWeight="500" style={[{ color: theme.subtext }, styles.optionSub]}>
+            <AppText weight="bold" style={[{ color: theme.text }, styles.optionLabel]}>{label}</AppText>
+            <AppText variant="tiny" weight="medium" style={[{ color: theme.subtext }, styles.optionSub]}>
               {isActive ? 'Currently active' : 'Tap to enable'}
             </AppText>
           </View>
@@ -48,11 +48,11 @@ const StepPricing = () => {
 
       {isActive && (
         <View style={styles.priceContainer}>
-          <AppText variant="caption" fontWeight="600" style={[{ color: theme.text }, styles.priceLabel]}>
+          <AppText variant="caption" weight="semiBold" style={[{ color: theme.text }, styles.priceLabel]}>
             {type === 'sale' ? 'Expected Sale Price' : 'Monthly Rent'}
           </AppText>
           <View style={[styles.priceInputWrapper, { backgroundColor: theme.background, borderColor: theme.border }]}>
-            <AppText fontWeight="700" style={[{ color: theme.subtext }, styles.currency]}>Rs</AppText>
+            <AppText weight="bold" style={[{ color: theme.subtext }, styles.currency]}>Rs</AppText>
             <TextInput
               style={[styles.input, { color: theme.text }]}
               value={priceValue ? String(priceValue) : ''}
@@ -70,8 +70,8 @@ const StepPricing = () => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Pricing Strategy</AppText>
-      <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
+      <AppText variant="h2" weight="bold" style={{ color: theme.text }}>Pricing Strategy</AppText>
+      <AppText variant="small" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
         How would you like to list your property? You can select one or both.
       </AppText>
 
@@ -98,7 +98,7 @@ const StepPricing = () => {
       {errors && (errors as any).atLeastOnePurpose && (
         <View style={[styles.globalError, { backgroundColor: theme.danger + '10', borderColor: theme.danger + '30' }]}>
           <Ionicons name="alert-circle-outline" size={20} color={theme.danger} />
-          <AppText variant="caption" fontWeight="600" style={{ color: theme.danger }}>
+          <AppText variant="caption" weight="semiBold" style={{ color: theme.danger }}>
             {(errors as any).atLeastOnePurpose}
           </AppText>
         </View>
@@ -106,7 +106,7 @@ const StepPricing = () => {
 
       <View style={[styles.infoBox, { backgroundColor: theme.border + '20' }]}>
         <Ionicons name="shield-checkmark-outline" size={20} color={theme.subtext} />
-        <AppText variant="tiny" fontWeight="500" style={[{ color: theme.subtext }, styles.infoText]}>
+        <AppText variant="tiny" weight="medium" style={[{ color: theme.subtext }, styles.infoText]}>
           Your pricing information is stored securely and can be updated at any time.
         </AppText>
       </View>
@@ -119,9 +119,6 @@ const styles = StyleSheet.create({
     paddingBottom: 120,
     paddingHorizontal: 20,
     paddingTop: 10,
-  },
-  sectionTitle: { 
-    letterSpacing: -0.5,
   },
   sectionSubtitle: { 
     marginBottom: 24,
@@ -179,7 +176,7 @@ const styles = StyleSheet.create({
   input: { 
     flex: 1, 
     fontSize: 18, 
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
   },
   errorText: { 
     marginTop: 6, 
@@ -193,8 +190,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: 10,
     marginTop: 10,
-  },
-  globalErrorText: {
   },
   infoBox: {
     flexDirection: 'row',

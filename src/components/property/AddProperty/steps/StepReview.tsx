@@ -23,10 +23,10 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
   const ReviewSection = ({ title, stepIndex, children }: { title: string; stepIndex: number; children: React.ReactNode }) => (
     <View style={[styles.section, { borderColor: theme.border, backgroundColor: theme.card }]}>
       <View style={styles.sectionHeader}>
-        <AppText variant="caption" weight="bold" style={[{ color: theme.text }, styles.sectionTitle]}>{title}</AppText>
+        <AppText variant="small" weight="bold" style={[{ color: theme.text }, styles.sectionTitle]}>{title}</AppText>
         <TouchableOpacity onPress={() => onEditStep(stepIndex)} style={styles.editBtn}>
           <Ionicons name="create-outline" size={16} color={theme.primary} />
-          <AppText variant="tiny" weight="bold" style={{ color: theme.primary }}>Edit</AppText>
+          <AppText variant="tiny" weight="bold" color={theme.primary}>Edit</AppText>
         </TouchableOpacity>
       </View>
       <View style={styles.sectionContent}>
@@ -39,16 +39,16 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
     <View style={styles.infoRow}>
       <View style={styles.infoLabelContainer}>
         {icon && <MaterialCommunityIcons name={icon} size={16} color={theme.subtext} style={{ marginRight: 6 }} />}
-        <AppText variant="caption" weight="medium" style={{ color: theme.subtext }}>{label}</AppText>
+        <AppText variant="small" weight="medium" color={theme.subtext}>{label}</AppText>
       </View>
-      <AppText variant="caption" weight="bold" style={[{ color: theme.text }, styles.infoValue]}>{value || 'N/A'}</AppText>
+      <AppText variant="small" weight="bold" color={theme.text} style={styles.infoValue}>{value || 'N/A'}</AppText>
     </View>
   );
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <AppText variant="h1" weight="bold" style={{ color: theme.text }}>Review Your Listing</AppText>
-      <AppText variant="caption" style={[{ color: theme.subtext }, styles.subTitle]}>
+      <AppText variant="h2" weight="bold" color={theme.text} style={{ marginBottom: 4 }}>Review Your Listing</AppText>
+      <AppText variant="small" color={theme.subtext} style={styles.subTitle}>
         Please double-check all details before submitting your property.
       </AppText>
 
@@ -73,10 +73,10 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
       <ReviewSection title="Map Location" stepIndex={2}>
         <View style={styles.coordsRow}>
           <View style={styles.coordBadge}>
-            <AppText variant="tiny" weight="bold" style={styles.coordText}>Lat: {values.latitude ? values.latitude.toFixed(6) : 'Not set'}</AppText>
+            <AppText variant="caption" weight="bold" style={styles.coordText}>Lat: {values.latitude ? values.latitude.toFixed(6) : 'Not set'}</AppText>
           </View>
           <View style={styles.coordBadge}>
-            <AppText variant="tiny" weight="bold" style={styles.coordText}>Lng: {values.longitude ? values.longitude.toFixed(6) : 'Not set'}</AppText>
+            <AppText variant="caption" weight="bold" style={styles.coordText}>Lng: {values.longitude ? values.longitude.toFixed(6) : 'Not set'}</AppText>
           </View>
         </View>
       </ReviewSection>
@@ -105,7 +105,7 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
           ))}
         </View>
         {(values.media.length === 0 && values.existingMedia?.length === 0) && (
-            <AppText variant="caption" style={{ color: theme.subtext, textAlign: 'center', marginTop: 10 }}>No media uploaded</AppText>
+            <AppText variant="caption" color={theme.subtext} style={{ textAlign: 'center', marginTop: 10 }}>No media uploaded</AppText>
         )}
       </ReviewSection>
 
@@ -114,11 +114,11 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
           {values.amenities && values.amenities.length > 0 ? (
             values.amenities.map((amenity: string, idx: number) => (
               <View key={idx} style={[styles.amenityBadge, { backgroundColor: theme.primary + '15' }]}>
-                <AppText variant="tiny" weight="bold" style={{ color: theme.primary }}>{amenity}</AppText>
+                <AppText variant="tiny" weight="bold" color={theme.primary}>{amenity}</AppText>
               </View>
             ))
           ) : (
-            <AppText variant="caption" style={{ color: theme.subtext }}>No amenities selected</AppText>
+            <AppText variant="caption" color={theme.subtext}>No amenities selected</AppText>
           )}
         </View>
       </ReviewSection>
@@ -132,14 +132,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 120,
   },
-  pageTitle: { 
-    fontSize: 22, 
-    fontWeight: '800', 
-    marginBottom: 4,
-    letterSpacing: -0.5,
-  },
   subTitle: { 
-    fontSize: 14, 
     marginBottom: 24,
   },
   section: {
@@ -158,8 +151,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   sectionTitle: { 
-    fontSize: 15, 
-    fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -171,10 +162,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 8,
-  },
-  editBtnText: { 
-    fontSize: 12, 
-    fontWeight: '700',
   },
   sectionContent: { 
     gap: 12,
@@ -189,13 +176,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  infoLabel: { 
-    fontSize: 14, 
-    fontWeight: '500',
-  },
   infoValue: { 
-    fontSize: 14, 
-    fontWeight: '700', 
     flex: 1.5, 
     textAlign: 'right',
   },
@@ -210,8 +191,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   coordText: { 
-    fontSize: 12, 
-    fontWeight: '700', 
     color: '#475569',
   },
   mediaPreviewList: { 

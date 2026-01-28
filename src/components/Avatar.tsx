@@ -49,7 +49,7 @@ const AvatarComponent: React.FC<AvatarProps> = ({ user, size = 'md' }) => {
       width: avatarSize, 
       height: avatarSize, 
       borderRadius: avatarSize / 2,
-      backgroundColor: themeColors.gray[200]
+      backgroundColor: themeColors.border
     }]}>
       {finalImageSource && !imageError ? (
         <Image
@@ -64,20 +64,20 @@ const AvatarComponent: React.FC<AvatarProps> = ({ user, size = 'md' }) => {
           width: avatarSize, 
           height: avatarSize, 
           borderRadius: avatarSize / 2,
-          backgroundColor: themeColors.gray[200]
+          backgroundColor: themeColors.border
         }]}>
           {initials ? (
             <AppText 
               weight="bold"
               style={{ 
                 fontSize: avatarSize / 2.5,
-                color: themeColors.gray[600]
+                color: themeColors.mutedText
               }}
             >
               {initials}
             </AppText>
           ) : (
-            <Ionicons name="person" size={avatarSize / 1.5} color={themeColors.gray[400]} />
+            <Ionicons name="person" size={avatarSize / 1.5} color={themeColors.mutedText} />
           )}
         </View>
       )}

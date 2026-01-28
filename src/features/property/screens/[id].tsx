@@ -11,6 +11,7 @@ import authStore from '../../../stores/AuthStore';
 import favoriteStore from '../../../stores/FavoriteStore';
 import Avatar from '../../../components/Avatar';
 import { getImageUrl } from '../../../utils/mediaUtils';
+import { shareProperty } from '../../../utils/shareUtils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
 import ScreenLayout from '../../../components/ScreenLayout';
@@ -566,23 +567,33 @@ const PropertyDetailsScreen = observer(() => {
           </View>
 
           {/* Amenities Grid */}
-          {property.amenities && property.amenities.length > 0 && (
-            <View style={styles.section}>
-              <AppText variant="title" weight="bold" color={theme.text} style={styles.sectionTitle}>Amenities</AppText>
-              <View style={styles.amenitiesGrid}>
-                {property.amenities.map((amenity: string, i: number) => {
-                  const amenityData = AMENITY_ICONS[amenity] || { icon: 'checkmark-circle-outline', provider: 'Ionicons' };
-                  const IconProvider = amenityData.provider === 'Ionicons' ? Ionicons : MaterialCommunityIcons;
-                  return (
-                    <View key={i} style={[styles.amenityItem, { backgroundColor: theme.card }]}>
-                      <IconProvider name={amenityData.icon as any} size={18} color={primaryColor} />
-                      <AppText variant="small" weight="medium" color={theme.text} style={{ marginLeft: 8 }}>{amenity}</AppText>
-                    </View>
-                  );
-                })}
+          {(() => {
+            const amenities = Array.isArray(property.amenities) 
+              ? property.amenities 
+              : (typeof property.amenities === 'string' && property.amenities.startsWith('[')
+                  ? JSON.parse(property.amenities) 
+                  : []);
+            
+            if (!amenities || amenities.length === 0) return null;
+
+            return (
+              <View style={styles.section}>
+                <AppText variant="title" weight="bold" color={theme.text} style={styles.sectionTitle}>Amenities</AppText>
+                <View style={styles.amenitiesGrid}>
+                  {amenities.map((amenity: string, i: number) => {
+                    const amenityData = AMENITY_ICONS[amenity] || { icon: 'checkmark-circle-outline', provider: 'Ionicons' };
+                    const IconProvider = amenityData.provider === 'Ionicons' ? Ionicons : MaterialCommunityIcons;
+                    return (
+                      <View key={i} style={[styles.amenityItem, { backgroundColor: theme.card }]}>
+                        <IconProvider name={amenityData.icon as any} size={18} color={primaryColor} />
+                        <AppText variant="small" weight="medium" color={theme.text} style={{ marginLeft: 8 }}>{amenity}</AppText>
+                      </View>
+                    );
+                  })}
+                </View>
               </View>
-            </View>
-          )}
+            );
+          })()}
 
           {/* Location & Map Section */}
           <View style={styles.section}>
@@ -700,6 +711,15 @@ const PropertyDetailsScreen = observer(() => {
         <View style={styles.headerRightActions}>
           <TouchableOpacity 
             style={styles.iconButton} 
+            onPress={() => shareProperty(property)}
+          >
+            <BlurView intensity={60} style={styles.blur} tint="dark">
+              <Ionicons name="share-social-outline" size={22} color="#fff" />
+            </BlurView>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.iconButton, { marginLeft: 10 }]} 
             onPress={toggleFavorite}
           >
             <BlurView intensity={60} style={styles.blur} tint="dark">

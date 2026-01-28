@@ -32,7 +32,7 @@ export const initialValues = {
   media: [], // This will store new files to upload
   existingMedia: [], // This will store already uploaded media (for edit mode)
 
-  // Step 7
+  // Step 6
   amenities: [],
 };
 
