@@ -58,7 +58,7 @@ export default observer(function TabLayout() {
           title: 'Sell/Rent',
           tabBarIcon: ({ color }) => (
             <View style={styles.fabContainer}>
-              <View style={styles.fab}>
+              <View style={[styles.fab, { backgroundColor: themeColors.primary }]}>
                 <Ionicons name="add" size={32} color="#fff" />
               </View>
             </View>
@@ -132,7 +132,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#0066cc',
     justifyContent: 'center',
     alignItems: 'center',
   }

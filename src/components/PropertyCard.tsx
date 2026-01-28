@@ -213,7 +213,7 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
 
           <View style={styles.compactBody}>
             <View style={styles.compactHeaderRow}>
-              <AppText variant="title" weight="bold" numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
+              <AppText variant="body" weight="bold" numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
                 {locationLabel}
               </AppText>
               <View style={[styles.compactTypeBadge, { backgroundColor: themeColors.background }]}> 
@@ -222,7 +222,7 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
                 </AppText>
               </View>
             </View>
-            <AppText variant="h3" weight="bold" color={themeColors.primary} numberOfLines={1} style={{ marginBottom: 10 }}>
+            <AppText variant="title" weight="bold" color={themeColors.primary} numberOfLines={1} style={{ marginBottom: 8 }}>
               {displayPrice}
             </AppText>
             <View style={styles.compactMetaRow}>
@@ -325,37 +325,37 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
         <View style={styles.infoSection}>
           <View style={styles.priceRow}>
             <View style={styles.priceContainer}>
-              <AppText variant="h3" weight="bold" numberOfLines={1}> 
+              <AppText variant="title" weight="bold" numberOfLines={1}> 
                 {isSale ? formatPrice(property.sale_price) : formatPrice(property.rent_price)}
-                <AppText variant="small" color={themeColors.mutedText}> / {isRent && !isSale ? 'mo' : 'yr'}</AppText>
+                <AppText variant="caption" color={themeColors.mutedText}> / {isRent && !isSale ? 'mo' : 'yr'}</AppText>
               </AppText>
             </View>
             <View style={[styles.ratingContainer, { backgroundColor: '#fffbeb' }]}>
-              <Ionicons name="star" size={16} color={themeColors.warning} />
-              <AppText variant="small" weight="bold" style={{ marginLeft: 4, color: '#b45309' }}>4.0</AppText>
+              <Ionicons name="star" size={14} color={themeColors.warning} />
+              <AppText variant="caption" weight="bold" style={{ marginLeft: 4, color: '#b45309' }}>4.0</AppText>
             </View>
           </View>
 
           <View style={styles.titleRow}>
-            <AppText variant="title" weight="bold" numberOfLines={1} style={{ flex: 1, marginRight: 12 }}>
+            <AppText variant="body" weight="bold" numberOfLines={1} style={{ flex: 1, marginRight: 12 }}>
               {propertyTitle}
             </AppText>
             
             <View style={styles.featureRow}>
               <View style={styles.featureItem}>
-                <Ionicons name="bed-outline" size={18} color={themeColors.mutedText} />
-                <AppText variant="body" weight="medium" style={{ marginLeft: 6 }}>{property.bedrooms || 0}</AppText>
+                <Ionicons name="bed-outline" size={16} color={themeColors.mutedText} />
+                <AppText variant="small" weight="medium" style={{ marginLeft: 4 }}>{property.bedrooms || 0}</AppText>
               </View>
               <View style={styles.featureItem}>
-                <MaterialCommunityIcons name="bathtub-outline" size={18} color={themeColors.mutedText} />
-                <AppText variant="body" weight="medium" style={{ marginLeft: 6 }}>{property.bathrooms || 0}</AppText>
+                <MaterialCommunityIcons name="bathtub-outline" size={16} color={themeColors.mutedText} />
+                <AppText variant="small" weight="medium" style={{ marginLeft: 4 }}>{property.bathrooms || 0}</AppText>
               </View>
             </View>
           </View>
           
           <View style={styles.locationRow}>
-            <Ionicons name="location-outline" size={18} color={themeColors.mutedText} />
-            <AppText variant="body" color={themeColors.subtext || themeColors.mutedText} numberOfLines={1} style={{ marginLeft: 6, flex: 1 }}>
+            <Ionicons name="location-outline" size={16} color={themeColors.mutedText} />
+            <AppText variant="small" color={themeColors.subtext || themeColors.mutedText} numberOfLines={1} style={{ marginLeft: 4, flex: 1 }}>
               {fullAddress || 'Location details'}
             </AppText>
           </View>

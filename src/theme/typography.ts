@@ -2,35 +2,35 @@ import { fonts } from './fonts';
 
 export const typography = {
   h1: {
-    fontSize: 28,
-    fontFamily: fonts.bold,
-  },
-  h2: {
     fontSize: 24,
     fontFamily: fonts.bold,
   },
-  h3: {
-    fontSize: 20,
-    fontFamily: fonts.semiBold,
+  h2: {
+    fontSize: 22,
+    fontFamily: fonts.bold,
   },
-  title: {
+  h3: {
     fontSize: 18,
     fontFamily: fonts.semiBold,
   },
-  body: {
+  title: {
     fontSize: 16,
-    fontFamily: fonts.regular,
+    fontFamily: fonts.semiBold,
   },
-  small: {
+  body: {
     fontSize: 14,
     fontFamily: fonts.regular,
   },
-  caption: {
+  small: {
     fontSize: 12,
     fontFamily: fonts.regular,
   },
+  caption: {
+    fontSize: 11,
+    fontFamily: fonts.regular,
+  },
   tiny: {
-    fontSize: 10,
+    fontSize: 9,
     fontFamily: fonts.regular,
   },
 };
