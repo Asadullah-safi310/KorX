@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Pressable, FlatList, Dimensions, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Pressable, FlatList, Dimensions, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
@@ -111,7 +112,8 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
       <Image 
         source={{ uri: getImageUrl(item) || undefined }} 
         style={variant === 'compact' ? styles.compactImage : styles.image} 
-        resizeMode="cover"
+        contentFit="cover"
+        transition={300}
       />
     </View>
   );
@@ -165,7 +167,7 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
                 style={styles.compactFlatList}
               />
             ) : (
-              <Image source={DefaultPropertyImage} style={styles.compactImage} />
+              <Image source={DefaultPropertyImage} style={styles.compactImage} contentFit="cover" />
             )}
             
             <View style={styles.compactImageOverlay} />
@@ -260,7 +262,7 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
               style={styles.flatList}
             />
           ) : (
-            <Image source={DefaultPropertyImage} style={styles.image} resizeMode="cover" />
+            <Image source={DefaultPropertyImage} style={styles.image} contentFit="cover" />
           )}
 
           {photos.length > 1 && (

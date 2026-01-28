@@ -159,9 +159,9 @@ const ProfileEditScreen = observer(() => {
         <View style={styles.avatarSection}>
           <TouchableOpacity onPress={pickImage} activeOpacity={0.9} style={styles.avatarWrapper}>
             {profilePicture ? (
-              <Avatar user={{ profile_picture: profilePicture.uri }} size="xl" />
+              <Avatar user={{ profile_picture: profilePicture.uri, full_name: formData.full_name }} size="xl" />
             ) : (
-              <Avatar user={authStore.user} size="xl" />
+              <Avatar user={authStore.user as any} size="xl" />
             )}
             <View style={[styles.editBadge, { backgroundColor: theme.primary, borderColor: theme.background }]}>
               <Ionicons name="camera" size={20} color="#fff" />

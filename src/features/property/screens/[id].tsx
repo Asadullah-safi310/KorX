@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, StyleSheet, ScrollView, Image, ActivityIndicator, TouchableOpacity, Dimensions, Linking, Alert } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, TouchableOpacity, Dimensions, Linking, Alert, Platform, Modal, FlatList } from 'react-native';
 import { AppText } from '../../../components/AppText';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { observer } from 'mobx-react-lite';
 import { useThemeColor, useCurrentTheme } from '../../../hooks/useThemeColor';
 import { propertyService } from '../../../services/property.service';
@@ -14,8 +14,105 @@ import { getImageUrl } from '../../../utils/mediaUtils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
 import ScreenLayout from '../../../components/ScreenLayout';
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  useAnimatedScrollHandler, 
+  interpolate, 
+  Extrapolation 
+} from 'react-native-reanimated';
+import { Image } from 'expo-image';
 
-const { width } = Dimensions.get('window');
+// Safe import for react-native-maps to prevent crash on environments without native module
+let MapView: any;
+let Marker: any;
+let PROVIDER_GOOGLE: any;
+
+try {
+  const Maps = require('react-native-maps');
+  MapView = Maps.default;
+  Marker = Maps.Marker;
+  PROVIDER_GOOGLE = Maps.PROVIDER_GOOGLE;
+} catch (e) {
+  console.log('react-native-maps not available');
+}
+
+const { width, height } = Dimensions.get('window');
+const HEADER_HEIGHT = 420;
+
+const AMENITY_ICONS: Record<string, { icon: string; provider: 'Ionicons' | 'MaterialCommunityIcons' }> = {
+  'Parking': { icon: 'car-outline', provider: 'Ionicons' },
+  'Security Guard': { icon: 'shield-checkmark-outline', provider: 'Ionicons' },
+  'Central Heating System': { icon: 'thermometer-outline', provider: 'Ionicons' },
+  'Cupboards': { icon: 'closet-outline', provider: 'MaterialCommunityIcons' },
+  'Sunny': { icon: 'sunny-outline', provider: 'Ionicons' },
+  'Basement': { icon: 'stairs-down', provider: 'MaterialCommunityIcons' },
+  'AC': { icon: 'air-conditioner', provider: 'MaterialCommunityIcons' },
+  'Lift': { icon: 'elevator-passenger-outline', provider: 'MaterialCommunityIcons' },
+  'Furnished': { icon: 'chair-rolling', provider: 'MaterialCommunityIcons' },
+  'Semi-Furnished': { icon: 'chair-school', provider: 'MaterialCommunityIcons' },
+  'Solar Facility': { icon: 'solar-power-variant-outline', provider: 'MaterialCommunityIcons' },
+  'Generator Facility': { icon: 'engine-outline', provider: 'MaterialCommunityIcons' },
+};
+
+const FullscreenViewer = ({ 
+  visible, 
+  images, 
+  initialIndex, 
+  onClose 
+}: { 
+  visible: boolean; 
+  images: string[]; 
+  initialIndex: number; 
+  onClose: () => void;
+}) => {
+  const insets = useSafeAreaInsets();
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <View style={styles.fullscreenContainer}>
+        <BlurView intensity={100} tint="dark" style={StyleSheet.absoluteFill} />
+        
+        <FlatList
+          data={images}
+          horizontal
+          pagingEnabled
+          initialScrollIndex={initialIndex}
+          getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
+          showsHorizontalScrollIndicator={false}
+          onMomentumScrollEnd={(e) => {
+            setCurrentIndex(Math.round(e.nativeEvent.contentOffset.x / width));
+          }}
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.fullscreenImageWrapper}>
+              <Image 
+                source={{ uri: getImageUrl(item) ?? undefined }} 
+                style={styles.fullscreenImage}
+                contentFit="contain"
+              />
+            </View>
+          )}
+        />
+
+        {/* Fullscreen UI */}
+        <TouchableOpacity 
+          style={[styles.closeButton, { top: insets.top + 10 }]} 
+          onPress={onClose}
+        >
+          <Ionicons name="close" size={28} color="#fff" />
+        </TouchableOpacity>
+
+        <View style={[styles.fullscreenBadge, { bottom: insets.bottom + 40 }]}>
+          <AppText variant="body" weight="bold" color="#fff">
+            {currentIndex + 1} / {images.length}
+          </AppText>
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
 const ProfileSection = observer(({ title, user, type }: { title: string; user: any; type: string }) => {
   const router = useRouter();
@@ -31,23 +128,49 @@ const ProfileSection = observer(({ title, user, type }: { title: string; user: a
     }
   };
 
+  const handleWhatsApp = () => {
+    if (user.phone) {
+      const message = 'Hello, I am interested in your property listing.';
+      const url = `whatsapp://send?phone=${user.phone}&text=${encodeURIComponent(message)}`;
+      Linking.openURL(url).catch(() => {
+        Alert.alert('Error', 'WhatsApp is not installed on your device');
+      });
+    }
+  };
+
   return (
     <View style={styles.profileSectionWrapper}>
       {title ? <AppText variant="title" weight="bold" color={theme.text} style={{ marginBottom: 16 }}>{title}</AppText> : null}
-      <TouchableOpacity 
-        activeOpacity={0.7} 
-        onPress={handleProfilePress} 
-        style={[styles.miniProfileCard, { backgroundColor: theme.card, borderColor: theme.border }]}
-      >
-        <Avatar user={user} size="md" />
-        <View style={styles.miniProfileInfo}>
-          <AppText variant="body" weight="bold" color={theme.text}>{user.full_name}</AppText>
-          <AppText variant="small" weight="medium" color={theme.subtext}>
-            {type === 'Agent' ? 'Verified Agent' : 'Property Owner'}
-          </AppText>
+      <View style={[styles.miniProfileCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+        <TouchableOpacity 
+          activeOpacity={0.7} 
+          onPress={handleProfilePress} 
+          style={styles.miniProfileMain}
+        >
+          <Avatar user={user} size="md" />
+          <View style={styles.miniProfileInfo}>
+            <AppText variant="body" weight="bold" color={theme.text}>{user.full_name}</AppText>
+            <AppText variant="small" weight="medium" color={theme.subtext}>
+              {type === 'Agent' ? 'Verified Agent' : 'Property Owner'}
+            </AppText>
+          </View>
+        </TouchableOpacity>
+        
+        <View style={styles.profileActions}>
+          <TouchableOpacity 
+            style={[styles.profileActionBtn, { backgroundColor: theme.background }]}
+            onPress={handleWhatsApp}
+          >
+            <Ionicons name="logo-whatsapp" size={20} color="#25D366" />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.profileActionBtn, { backgroundColor: theme.background, marginLeft: 8 }]}
+            onPress={handleProfilePress}
+          >
+            <Ionicons name="chevron-forward" size={20} color={theme.subtext} />
+          </TouchableOpacity>
         </View>
-        <Ionicons name="chevron-forward" size={20} color={theme.subtext} style={styles.miniProfileArrow} />
-      </TouchableOpacity>
+      </View>
     </View>
   );
 });
@@ -60,11 +183,85 @@ const PropertyDetailsScreen = observer(() => {
   const [property, setProperty] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const imageScrollRef = useRef<ScrollView>(null);
-
+  const [viewerVisible, setViewerVisible] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState(0);
+  
+  const scrollY = useSharedValue(0);
   const theme = useThemeColor();
   const currentTheme = useCurrentTheme();
   const primaryColor = theme.primary;
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
+
+  const headerAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: interpolate(
+            scrollY.value,
+            [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
+            [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT * 0.75],
+            Extrapolation.CLAMP
+          ),
+        },
+        {
+          scale: interpolate(
+            scrollY.value,
+            [-HEADER_HEIGHT, 0],
+            [2, 1],
+            Extrapolation.CLAMP
+          ),
+        },
+      ],
+    };
+  });
+
+  const stickyHeaderStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: theme.background,
+      opacity: interpolate(
+        scrollY.value,
+        [HEADER_HEIGHT - 100, HEADER_HEIGHT - 60],
+        [0, 1],
+        Extrapolation.CLAMP
+      ),
+    };
+  });
+
+  const stickyTitleStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(
+        scrollY.value,
+        [HEADER_HEIGHT - 60, HEADER_HEIGHT - 20],
+        [0, 1],
+        Extrapolation.CLAMP
+      ),
+      transform: [
+        {
+          translateY: interpolate(
+            scrollY.value,
+            [HEADER_HEIGHT - 60, HEADER_HEIGHT - 20],
+            [10, 0],
+            Extrapolation.CLAMP
+          ),
+        },
+      ],
+    };
+  });
+
+  const handleWhatsApp = (user: any) => {
+    if (user?.phone) {
+      const message = 'Hello, I am interested in your property listing.';
+      const url = `whatsapp://send?phone=${user.phone}&text=${encodeURIComponent(message)}`;
+      Linking.openURL(url).catch(() => {
+        Alert.alert('Error', 'WhatsApp is not installed on your device');
+      });
+    }
+  };
 
   const propertyIdNum = parseInt(id as string);
   const isFavorite = favoriteStore.isFavorite(propertyIdNum);
@@ -120,7 +317,7 @@ const PropertyDetailsScreen = observer(() => {
               setLoading(true);
               await propertyStore.deleteProperty(id as string);
               router.back();
-            } catch (_err) {
+            } catch {
               Alert.alert('Error', 'Failed to delete property');
             } finally {
               setLoading(false);
@@ -134,6 +331,15 @@ const PropertyDetailsScreen = observer(() => {
   const handleCall = (phone: string) => {
     if (phone) {
       Linking.openURL(`tel:${phone}`);
+    }
+  };
+
+  const handleProfilePress = (user: any) => {
+    if (!user) return;
+    if (user.user_id) {
+      router.push(`/person/user_${user.user_id}`);
+    } else if (user.id) {
+      router.push(`/person/${user.id}`);
     }
   };
 
@@ -167,182 +373,369 @@ const PropertyDetailsScreen = observer(() => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <ScreenLayout 
-        scrollable 
-        backgroundColor={theme.background}
-        edges={['bottom', 'left', 'right']}
-        bottomSpacing={100}
+      {/* Main Content Scrollable */}
+      <Animated.ScrollView
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ 
+          paddingBottom: insets.bottom + 120,
+          backgroundColor: 'transparent'
+        }}
       >
-        {/* Header Image Gallery */}
-        <View style={styles.imageContainer}>
+        {/* Animated Header Image - Moved Inside for Scrollability */}
+        <Animated.View style={[styles.imageContainer, headerAnimatedStyle]}>
           {photos.length > 0 ? (
-            <ScrollView 
-              ref={imageScrollRef}
-              horizontal 
-              pagingEnabled 
+            <FlatList
+              data={photos}
+              horizontal
+              pagingEnabled
               showsHorizontalScrollIndicator={false}
-              style={styles.imageScroll}
-              onScroll={handleScroll}
+              onScroll={(e) => {
+                const slide = Math.round(e.nativeEvent.contentOffset.x / width);
+                if (slide !== activeImageIndex) setActiveImageIndex(slide);
+              }}
               scrollEventThrottle={16}
-            >
-              {photos.map((photo: string, index: number) => (
-                <View key={index} style={{ width: width }}>
+              keyExtractor={(_, i) => i.toString()}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity 
+                  activeOpacity={0.9}
+                  onPress={() => {
+                    setViewerIndex(index);
+                    setViewerVisible(true);
+                  }}
+                  style={{ width: width }}
+                >
                   <Image 
-                    source={{ uri: getImageUrl(photo) ?? undefined }} 
+                    source={{ uri: getImageUrl(item) ?? undefined }} 
                     style={styles.image} 
+                    contentFit="cover"
+                    transition={300}
                   />
-                </View>
-              ))}
-            </ScrollView>
+                </TouchableOpacity>
+              )}
+            />
           ) : (
             <View style={[styles.image, styles.placeholderImage, { backgroundColor: theme.card }]}>
               <Ionicons name="home-outline" size={80} color={theme.border} />
             </View>
           )}
 
-          {/* Top Actions Overlay */}
-          <View style={[styles.headerOverlay, { top: insets.top + 10 }]}>
-            <TouchableOpacity 
-              style={styles.iconButton} 
-              onPress={() => router.back()}
-            >
-              <BlurView intensity={40} style={styles.blur} tint="dark">
-                <Ionicons name="arrow-back" size={22} color="#fff" />
-              </BlurView>
-            </TouchableOpacity>
-
-            <View style={styles.headerRightActions}>
-              <TouchableOpacity 
-                style={styles.iconButton} 
-                onPress={toggleFavorite}
-              >
-                <BlurView intensity={40} style={styles.blur} tint="dark">
-                  <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={22} color={isFavorite ? theme.danger : "#fff"} />
-                </BlurView>
-              </TouchableOpacity>
-              
-              {canEdit && (
-                <>
-                  <TouchableOpacity 
-                    style={[styles.iconButton, { marginLeft: 10 }]} 
-                    onPress={() => router.push(`/property/create?id=${id}`)}
-                  >
-                    <BlurView intensity={40} style={styles.blur} tint="dark">
-                      <Ionicons name="pencil" size={18} color="#fff" />
-                    </BlurView>
-                  </TouchableOpacity>
-                  <TouchableOpacity 
-                    style={[styles.iconButton, { marginLeft: 10 }]} 
-                    onPress={handleDelete}
-                  >
-                    <BlurView intensity={40} style={styles.blur} tint="dark">
-                      <Ionicons name="trash" size={18} color="#fff" />
-                    </BlurView>
-                  </TouchableOpacity>
-                </>
-              )}
-            </View>
-          </View>
-
+          {/* Pagination Dots & Count Badge */}
           {photos.length > 1 && (
-            <View style={styles.imageBadge}>
-              <BlurView intensity={40} style={styles.badgeBlur} tint="dark">
-                <AppText variant="caption" weight="bold" color="#fff">{activeImageIndex + 1} / {photos.length}</AppText>
-              </BlurView>
+            <View style={styles.imageOverlayContainer}>
+              <View style={styles.dotsContainer}>
+                {photos.map((_, i) => (
+                  <View 
+                    key={i} 
+                    style={[
+                      styles.dot, 
+                      { backgroundColor: i === activeImageIndex ? '#fff' : 'rgba(255,255,255,0.4)' }
+                    ]} 
+                  />
+                ))}
+              </View>
+              <View style={styles.imageBadge}>
+                <BlurView intensity={60} style={styles.badgeBlur} tint="dark">
+                  <AppText variant="caption" weight="bold" color="#fff">{activeImageIndex + 1} / {photos.length}</AppText>
+                </BlurView>
+              </View>
             </View>
           )}
-        </View>
 
-        {/* Content */}
-        <View style={[styles.content, { backgroundColor: theme.background }]}>
+          {/* Gradient Overlay for better text readability */}
+          <View style={StyleSheet.absoluteFill} pointerEvents="none">
+            <View style={[styles.gradientOverlay, { backgroundColor: 'rgba(0,0,0,0.15)' }]} />
+          </View>
+        </Animated.View>
+
+        {/* Content Card */}
+        <View style={[styles.contentCard, { backgroundColor: theme.background }]}>
           <View style={[styles.indicator, { backgroundColor: theme.border }]} />
           
           <View style={styles.headerInfo}>
-            <View style={styles.typeRow}>
-              <View style={[styles.typeTag, { backgroundColor: primaryColor + '12' }]}>
-                <AppText variant="caption" weight="bold" color={primaryColor} style={{ textTransform: 'uppercase', fontSize: 11 }}>FOR {property.purpose}</AppText>
-              </View>
-              <View style={[styles.typeTag, { backgroundColor: '#10b98112', marginLeft: 8 }]}>
-                <AppText variant="caption" weight="bold" color="#10b981" style={{ textTransform: 'uppercase', fontSize: 11 }}>{property.property_type}</AppText>
-              </View>
-            </View>
-
             <View style={styles.priceRow}>
-              <AppText variant="h1" weight="bold" color={theme.text} style={{ fontSize: 30, letterSpacing: -1 }}>
+              <AppText variant="h2" weight="bold" color={primaryColor}>
                 Rs {price.toLocaleString()}
-                {property.purpose === 'RENT' && <AppText variant="body" weight="semiBold" color={theme.subtext}> / month</AppText>}
+                {property.purpose === 'RENT' && <AppText variant="body" weight="medium" color={theme.subtext}> / month</AppText>}
               </AppText>
-            </View>
-
-            <AppText variant="h2" weight="bold" color={theme.text} style={{ marginBottom: 8, letterSpacing: -0.5 }}>
-              {property.AreaData?.name || property.DistrictData?.name || property.city} Premium Residence
-            </AppText>
-
-            <View style={styles.locationContainer}>
-              <View style={[styles.locIconBg, { backgroundColor: primaryColor + '10' }]}>
-                <Ionicons name="location" size={14} color={primaryColor} />
+              <View style={[styles.statusBadge, { backgroundColor: property.is_available_for_sale || property.is_available_for_rent ? '#dcfce7' : '#fee2e2' }]}>
+                <AppText variant="tiny" weight="bold" color={property.is_available_for_sale || property.is_available_for_rent ? '#166534' : '#991b1b'}>
+                  {property.is_available_for_sale || property.is_available_for_rent ? 'AVAILABLE' : 'UNAVAILABLE'}
+                </AppText>
               </View>
-              <AppText variant="small" weight="medium" color={theme.subtext} numberOfLines={2} style={{ marginLeft: 4, fontSize: 15 }}>
-                {[
-                  property.AreaData?.name,
-                  property.DistrictData?.name,
-                  property.ProvinceData?.name
-                ].filter(Boolean).join(', ')}
-              </AppText>
             </View>
-          </View>
 
-          {/* Features Grid */}
-          <View style={styles.featuresGrid}>
-            {property.property_type?.toLowerCase() !== 'plot' && (
-              <>
-                <View style={[styles.featureCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-                  <View style={[styles.featIcon, { backgroundColor: '#3b82f615' }]}>
-                    <Ionicons name="bed" size={18} color="#3b82f6" />
-                  </View>
-                  <AppText variant="title" weight="bold" color={theme.text} style={{ marginTop: 8 }}>{property.bedrooms || 0}</AppText>
-                  <AppText variant="caption" weight="semiBold" color={theme.subtext} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 2 }}>Bedrooms</AppText>
-                </View>
-                <View style={[styles.featureCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-                  <View style={[styles.featIcon, { backgroundColor: '#8b5cf615' }]}>
-                    <Ionicons name="water" size={18} color="#8b5cf6" />
-                  </View>
-                  <AppText variant="title" weight="bold" color={theme.text} style={{ marginTop: 8 }}>{property.bathrooms || 0}</AppText>
-                  <AppText variant="caption" weight="semiBold" color={theme.subtext} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 2 }}>Bathrooms</AppText>
-                </View>
-              </>
-            )}
-            <View style={[styles.featureCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-              <View style={[styles.featIcon, { backgroundColor: '#f59e0b15' }]}>
-                <Ionicons name="expand" size={18} color="#f59e0b" />
+            <View style={styles.titleFavoriteRow}>
+              <View style={{ flex: 1 }}>
+                <AppText variant="h1" weight="bold" color={theme.text} style={styles.propertyTitle}>
+                  {property.title || `${property.bedrooms || ''} Bed ${property.property_type}`}
+                </AppText>
               </View>
-              <AppText variant="title" weight="bold" color={theme.text} style={{ marginTop: 8 }}>{property.area_size}</AppText>
-              <AppText variant="caption" weight="semiBold" color={theme.subtext} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 2 }}>Sq Ft</AppText>
+              <TouchableOpacity 
+                style={[styles.favoriteCircle, { backgroundColor: isFavorite ? '#fff1f2' : theme.card }]} 
+                onPress={toggleFavorite}
+              >
+                <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={22} color={isFavorite ? "#ef4444" : theme.subtext} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.locationRatingRow}>
+              <View style={styles.locationRow}>
+                <Ionicons name="location" size={16} color="#f87171" />
+                <AppText variant="body" weight="medium" color={theme.subtext} style={{ marginLeft: 4 }}>
+                  {[property.address, property.AreaData?.name].filter(Boolean).join(', ')}
+                </AppText>
+              </View>
+              <View style={styles.ratingRow}>
+                <Ionicons name="star" size={16} color="#ef4444" />
+                <AppText variant="body" weight="bold" color={theme.text} style={{ marginLeft: 4 }}>3.7</AppText>
+              </View>
             </View>
           </View>
 
-          {/* Description */}
+          {/* Floating Agent & Features Card */}
+          <View style={[styles.floatingCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+            <View style={styles.agentInfoRow}>
+              <TouchableOpacity 
+                activeOpacity={0.7} 
+                onPress={() => handleProfilePress(property.Agent || property.Creator)}
+                style={styles.agentMainInfo}
+              >
+                <Avatar user={property.Agent || property.Creator} size="md" />
+                <View style={styles.agentTextContainer}>
+                  <AppText variant="body" weight="bold" color={theme.text}>
+                    {(property.Agent || property.Creator)?.full_name || 'Agent Name'}
+                  </AppText>
+                  <AppText variant="small" color={theme.subtext} style={{ marginTop: 2 }}>
+                    Listing agent in charge of property.
+                  </AppText>
+                </View>
+              </TouchableOpacity>
+              <View style={styles.agentActionButtons}>
+                <TouchableOpacity 
+                  style={[styles.messageIcon, { backgroundColor: '#25D366', marginRight: 8 }]}
+                  onPress={() => handleWhatsApp(property.Agent || property.Creator)}
+                >
+                  <Ionicons name="logo-whatsapp" size={18} color="#fff" />
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.messageIcon, { backgroundColor: '#1e293b' }]}
+                  onPress={() => {
+                    const email = (property.Agent || property.Creator)?.email;
+                    if (email) {
+                      Linking.openURL(`mailto:${email}?subject=Inquiry: ${property.title}`);
+                    }
+                  }}
+                >
+                  <Ionicons name="mail" size={18} color="#fff" />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={[styles.divider, { backgroundColor: theme.border }]} />
+
+            <View style={styles.statsRow}>
+              <View style={styles.statItemMini}>
+                <Ionicons name="scan-outline" size={18} color="#475569" />
+                <AppText variant="small" weight="medium" color={theme.subtext} style={{ marginLeft: 6 }}>
+                  {property.area_size} Sq. Ft.
+                </AppText>
+              </View>
+              <View style={styles.statItemMini}>
+                <Ionicons name="water-outline" size={18} color="#475569" />
+                <AppText variant="small" weight="medium" color={theme.subtext} style={{ marginLeft: 6 }}>
+                  {property.bathrooms || 0} Bathroom
+                </AppText>
+              </View>
+              <View style={styles.statItemMini}>
+                <Ionicons name="bed-outline" size={18} color="#475569" />
+                <AppText variant="small" weight="medium" color={theme.subtext} style={{ marginLeft: 6 }}>
+                  {property.bedrooms || 0} Bedroom
+                </AppText>
+              </View>
+            </View>
+          </View>
+
+          {/* Description Section */}
           <View style={styles.section}>
-            <AppText variant="title" weight="bold" color={theme.text} style={{ marginBottom: 16, letterSpacing: -0.3 }}>About this Property</AppText>
-            <AppText variant="small" color={theme.text} style={{ lineHeight: 24, opacity: 0.8, fontSize: 15 }}>
-              {property.description || 'Experience luxury living in this sophisticated property. Featuring modern amenities and a prime location, this residence offers the perfect blend of comfort and style for discerning individuals.'}
+            <AppText variant="title" weight="bold" color={theme.text} style={styles.sectionTitle}>Property description</AppText>
+            <AppText variant="body" color={theme.text} style={styles.descriptionText}>
+              {property.description || 'Step into comfort and style with this spacious property featuring an open-concept living area and high-quality finishes.'}
             </AppText>
           </View>
 
-          {/* Listing Agent */}
+          {/* Amenities Grid */}
+          {property.amenities && property.amenities.length > 0 && (
+            <View style={styles.section}>
+              <AppText variant="title" weight="bold" color={theme.text} style={styles.sectionTitle}>Amenities</AppText>
+              <View style={styles.amenitiesGrid}>
+                {property.amenities.map((amenity: string, i: number) => {
+                  const amenityData = AMENITY_ICONS[amenity] || { icon: 'checkmark-circle-outline', provider: 'Ionicons' };
+                  const IconProvider = amenityData.provider === 'Ionicons' ? Ionicons : MaterialCommunityIcons;
+                  return (
+                    <View key={i} style={[styles.amenityItem, { backgroundColor: theme.card }]}>
+                      <IconProvider name={amenityData.icon as any} size={18} color={primaryColor} />
+                      <AppText variant="small" weight="medium" color={theme.text} style={{ marginLeft: 8 }}>{amenity}</AppText>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+          )}
+
+          {/* Location & Map Section */}
           <View style={styles.section}>
-            <AppText variant="title" weight="bold" color={theme.text} style={{ marginBottom: 16, letterSpacing: -0.3 }}>Professional Contact</AppText>
+            <View style={styles.sectionHeaderRow}>
+              <AppText variant="title" weight="bold" color={theme.text} style={styles.sectionTitle}>Location</AppText>
+              <TouchableOpacity 
+                onPress={() => {
+                  const label = property.title || 'Property Location';
+                  const url = Platform.select({
+                    ios: `maps:0,0?q=${label}@${property.latitude},${property.longitude}`,
+                    android: `geo:0,0?q=${property.latitude},${property.longitude}(${label})`
+                  });
+                  if (url) Linking.openURL(url);
+                }}
+              >
+                <AppText variant="body" weight="semiBold" color={primaryColor}>Open in Maps</AppText>
+              </TouchableOpacity>
+            </View>
+            <AppText variant="small" weight="medium" color={theme.subtext} style={{ marginBottom: 16 }}>
+              {[property.address, property.AreaData?.name, property.DistrictData?.name, property.city].filter(Boolean).join(', ')}
+            </AppText>
+            
+            <TouchableOpacity 
+              activeOpacity={0.9}
+              onPress={() => {
+                const label = property.title || 'Property Location';
+                const url = Platform.select({
+                  ios: `maps:0,0?q=${label}@${property.latitude},${property.longitude}`,
+                  android: `geo:0,0?q=${property.latitude},${property.longitude}(${label})`
+                });
+                if (url) Linking.openURL(url);
+              }}
+              style={[styles.mapContainer, { borderColor: theme.border }]}
+            >
+              {property.latitude && property.longitude && MapView ? (
+                <>
+                  <MapView
+                    provider={PROVIDER_GOOGLE}
+                    style={styles.map}
+                    initialRegion={{
+                      latitude: parseFloat(property.latitude),
+                      longitude: parseFloat(property.longitude),
+                      latitudeDelta: 0.01,
+                      longitudeDelta: 0.01,
+                    }}
+                    scrollEnabled={false}
+                    zoomEnabled={false}
+                    pitchEnabled={false}
+                    rotateEnabled={false}
+                  >
+                    {Marker && (
+                      <Marker
+                        coordinate={{
+                          latitude: parseFloat(property.latitude),
+                          longitude: parseFloat(property.longitude),
+                        }}
+                      >
+                        <View style={[styles.markerContainer, { backgroundColor: primaryColor }]}>
+                          <Ionicons name="home" size={16} color="#fff" />
+                        </View>
+                      </Marker>
+                    )}
+                  </MapView>
+                  <View style={styles.mapOverlay}>
+                    <BlurView intensity={40} style={styles.mapOverlayBlur} tint="dark">
+                      <Ionicons name="expand-outline" size={14} color="#fff" />
+                      <AppText variant="tiny" weight="bold" color="#fff" style={{ marginLeft: 4 }}>Tap to expand</AppText>
+                    </BlurView>
+                  </View>
+                </>
+              ) : (
+                <View style={[styles.mapPlaceholder, { backgroundColor: theme.card }]}>
+                  <Ionicons name="map-outline" size={32} color={theme.subtext} />
+                  <AppText variant="small" color={theme.subtext}>Map location not available</AppText>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+
+          {/* Agent Section */}
+          {/* <View style={styles.section}>
+            <AppText variant="title" weight="bold" color={theme.text} style={styles.sectionTitle}>Listed By</AppText>
             <ProfileSection 
               title="" 
               user={property.Agent || property.Creator} 
               type={property.Agent ? "Agent" : "Owner"} 
             />
-          </View>
+          </View> */}
         </View>
-      </ScreenLayout>
+      </Animated.ScrollView>
 
-      {/* Premium Footer */}
-      <BlurView intensity={80} tint={currentTheme === 'dark' ? 'dark' : 'light'} style={[styles.footer, { borderTopColor: theme.border, paddingBottom: insets.bottom + 12 }]}>
+      {/* Top Floating Actions (Sticky Header) */}
+      <Animated.View style={[
+        styles.stickyHeader, 
+        { height: insets.top + 60, paddingTop: insets.top },
+        stickyHeaderStyle
+      ]} />
+
+      <View style={[styles.headerOverlay, { top: insets.top + 10 }]}>
+        <TouchableOpacity 
+          style={styles.iconButton} 
+          onPress={() => router.back()}
+        >
+          <BlurView intensity={60} style={styles.blur} tint="dark">
+            <Ionicons name="arrow-back" size={22} color="#fff" />
+          </BlurView>
+        </TouchableOpacity>
+
+        <Animated.View style={[styles.stickyTitleContainer, stickyTitleStyle]}>
+          <AppText variant="body" weight="bold" color={theme.text} numberOfLines={1}>
+            {property.title || property.property_type}
+          </AppText>
+        </Animated.View>
+
+        <View style={styles.headerRightActions}>
+          <TouchableOpacity 
+            style={styles.iconButton} 
+            onPress={toggleFavorite}
+          >
+            <BlurView intensity={60} style={styles.blur} tint="dark">
+              <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={22} color={isFavorite ? theme.danger : "#fff"} />
+            </BlurView>
+          </TouchableOpacity>
+          
+          {canEdit && (
+            <>
+              <TouchableOpacity 
+                style={[styles.iconButton, { marginLeft: 10 }]} 
+                onPress={() => router.push(`/property/create?id=${id}`)}
+              >
+                <BlurView intensity={60} style={styles.blur} tint="dark">
+                  <Ionicons name="pencil" size={18} color="#fff" />
+                </BlurView>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.iconButton, { marginLeft: 10 }]} 
+                onPress={handleDelete}
+              >
+                <BlurView intensity={60} style={styles.blur} tint="dark">
+                  <Ionicons name="trash" size={18} color="#fff" />
+                </BlurView>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+      </View>
+
+      {/* Sticky Footer */}
+      <BlurView 
+        intensity={80} 
+        tint={currentTheme === 'dark' ? 'dark' : 'light'} 
+        style={[styles.footer, { borderTopColor: theme.border, paddingBottom: insets.bottom + 12 }]}
+      >
         <View style={styles.footerInner}>
           {(property.Agent?.phone || property.Creator?.phone) && (
             <TouchableOpacity 
@@ -358,15 +751,27 @@ const PropertyDetailsScreen = observer(() => {
               if (canDeal) {
                 router.push(`/deal/create?propertyId=${property.property_id}`);
               } else {
-                Alert.alert('Inquiry Sent', 'Your interest in this property has been recorded. Our agent will reach out to you within 24 hours.');
+                Alert.alert('Inquiry Sent', 'Your interest in this property has been recorded.');
               }
             }}
           >
-            <AppText variant="body" weight="bold" color="#fff">{canDeal ? 'Initiate Transaction' : 'Send Inquiry'}</AppText>
+            <AppText variant="body" weight="bold" color="#fff">
+              {canDeal ? 'Transaction' : 'Send Inquiry'}
+            </AppText>
             <Ionicons name="chevron-forward" size={18} color="#fff" style={{ marginLeft: 6 }} />
           </TouchableOpacity>
         </View>
       </BlurView>
+
+      {/* Fullscreen Viewer Modal */}
+      {photos.length > 0 && (
+        <FullscreenViewer 
+          visible={viewerVisible} 
+          images={photos} 
+          initialIndex={viewerIndex} 
+          onClose={() => setViewerVisible(false)} 
+        />
+      )}
     </View>
   );
 });
@@ -381,9 +786,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imageContainer: {
-    height: 400,
+    height: HEADER_HEIGHT,
     width: '100%',
-    position: 'relative',
+    backgroundColor: '#000',
+    overflow: 'hidden',
   },
   imageScroll: {
     width: '100%',
@@ -391,9 +797,25 @@ const styles = StyleSheet.create({
   },
   image: {
     width: width,
-    height: '100%',
+    height: HEADER_HEIGHT,
   },
   placeholderImage: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  gradientOverlay: {
+    flex: 1,
+  },
+  stickyHeader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 9,
+  },
+  stickyTitleContainer: {
+    flex: 1,
+    marginHorizontal: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -401,6 +823,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 20,
     right: 20,
+    zIndex: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -411,10 +834,8 @@ const styles = StyleSheet.create({
   iconButton: {
     width: 44,
     height: 44,
-    borderRadius: 22,
+    borderRadius: 12,
     overflow: 'hidden',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   blur: {
     width: '100%',
@@ -422,95 +843,211 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  contentCard: {
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    paddingHorizontal: 24,
+    paddingTop: 12,
+    marginTop: -32,
+    minHeight: 600,
+  },
   imageBadge: {
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  imageOverlayContainer: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 48,
+    left: 20,
     right: 20,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  dotsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  badgeBlur: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
-  },
-  imageBadgeText: {
-  },
-  content: {
-    paddingHorizontal: 24,
-    paddingTop: 10,
-    paddingBottom: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   indicator: {
     width: 40,
     height: 4,
-    backgroundColor: '#e2e8f0',
     borderRadius: 2,
     alignSelf: 'center',
-    marginBottom: 20,
-  },
-  headerInfo: {
     marginBottom: 24,
   },
-  typeRow: {
-    flexDirection: 'row',
-    marginBottom: 12,
-  },
-  typeTag: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 10,
-  },
-  typeTagText: {
+  headerInfo: {
+    marginBottom: 20,
   },
   priceRow: {
     flexDirection: 'row',
-    alignItems: 'baseline',
-    marginBottom: 8,
-  },
-  priceText: {
-  },
-  rentPeriod: {
-  },
-  titleText: {
-  },
-  locationContainer: {
-    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 12,
   },
-  locationText: {
-    marginLeft: 4,
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
-  featuresGrid: {
+  titleFavoriteRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 30,
-    gap: 12,
-  },
-  featureCard: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
     alignItems: 'center',
+    marginBottom: 8,
+  },
+  favoriteCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  featValue: {
-    marginTop: 8,
+  locationRatingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  featLabel: {
-    marginTop: 2,
+  ratingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  featIcon: {
+  propertyTitle: {
+    fontSize: 24,
+    lineHeight: 32,
+    letterSpacing: -0.5,
+  },
+  floatingCard: {
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    marginBottom: 32,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  agentInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  agentActionButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  agentTextContainer: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  messageIcon: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: 20,
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  divider: {
+    height: 1,
+    width: '100%',
+    marginVertical: 16,
+    opacity: 0.5,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  statItemMini: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
   section: {
     marginBottom: 32,
   },
   sectionTitle: {
+    marginBottom: 12,
+    fontSize: 20,
+    letterSpacing: -0.5,
   },
-  description: {
+  descriptionText: {
+    lineHeight: 24,
+    opacity: 0.8,
+  },
+  amenitiesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  amenityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    minWidth: '45%',
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  mapContainer: {
+    height: 200,
+    width: '100%',
+    borderRadius: 24,
+    overflow: 'hidden',
+    borderWidth: 1,
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  mapOverlay: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  mapOverlayBlur: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  markerContainer: {
+    padding: 6,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  mapPlaceholder: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
   },
   profileSectionWrapper: {
     marginTop: 0,
@@ -518,18 +1055,30 @@ const styles = StyleSheet.create({
   miniProfileCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    padding: 12,
     borderRadius: 16,
     borderWidth: 1,
+    justifyContent: 'space-between',
+  },
+  miniProfileMain: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
   miniProfileInfo: {
-    flex: 1,
     marginLeft: 12,
+    flex: 1,
   },
-  miniProfileName: {
+  profileActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  miniProfileRole: {
-    marginTop: 2,
+  profileActionBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   miniProfileArrow: {
     marginLeft: 8,
@@ -564,18 +1113,44 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  bookBtnText: {
-  },
   backButton: {
     marginTop: 20,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 16,
   },
-  backButtonText: {
+  fullscreenContainer: {
+    flex: 1,
+    backgroundColor: '#000',
   },
-  errorText: {
-    marginTop: 12,
+  fullscreenImageWrapper: {
+    width: width,
+    height: height,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullscreenImage: {
+    width: width,
+    height: height,
+  },
+  closeButton: {
+    position: 'absolute',
+    right: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  fullscreenBadge: {
+    position: 'absolute',
+    alignSelf: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
   },
 });
 

@@ -53,7 +53,7 @@ export default observer(function TabLayout() {
       
       {/* Sell/Rent FAB */}
       <Tabs.Screen
-        name="deals"
+        name="create-property"
         options={{
           title: 'Sell/Rent',
           tabBarIcon: ({ color }) => (

@@ -19,7 +19,7 @@ import { useThemeColor } from '../../../hooks/useThemeColor';
 import { locationService } from '../../../services/location.service';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { BlurView } from 'expo-blur';
-import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
+import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
 

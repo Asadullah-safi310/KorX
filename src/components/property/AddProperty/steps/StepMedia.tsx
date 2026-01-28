@@ -159,7 +159,7 @@ const StepMedia = () => {
   );
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Visual Assets</AppText>
       <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
         Properties with 5+ high-quality photos get 3x more inquiries.

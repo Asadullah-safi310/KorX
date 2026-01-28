@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '../hooks/useThemeColor';
 import { AppText } from './AppText';
+import Avatar from './Avatar';
 
 interface PersonCardProps {
   person: any;
@@ -17,11 +18,7 @@ const PersonCard = ({ person, onPress }: PersonCardProps) => {
       onPress={onPress} 
       activeOpacity={0.8}
     >
-      <View style={[styles.avatar, { backgroundColor: themeColors.primary + '10' }]}>
-        <AppText weight="bold" color={themeColors.primary} style={{ fontSize: 22 }}>
-          {person.full_name ? person.full_name.charAt(0).toUpperCase() : '?'}
-        </AppText>
-      </View>
+      <Avatar user={person} size={54} />
       
       <View style={styles.content}>
         <AppText variant="title" weight="bold" numberOfLines={1}>
@@ -64,17 +61,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 5,
   },
-  avatar: {
-    width: 54,
-    height: 54,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
   content: {
     flex: 1,
     gap: 4,
+    marginLeft: 12,
   },
   details: {
     flexDirection: 'column',

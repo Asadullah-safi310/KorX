@@ -22,6 +22,7 @@ import StepLocation from './steps/StepLocation';
 import StepPricing from './steps/StepPricing';
 import StepMedia from './steps/StepMedia';
 import StepReview from './steps/StepReview';
+import StepAmenities from './steps/StepAmenities';
 import { stepSchemas, initialValues } from './validationSchemas';
 import { useAddPropertyWizard } from './useAddPropertyWizard';
 import { useThemeColor } from '../../../hooks/useThemeColor';
@@ -34,6 +35,7 @@ const steps = [
   { title: 'Location', component: StepLocation },
   { title: 'Pricing', component: StepPricing },
   { title: 'Media', component: StepMedia },
+  { title: 'Amenities', component: StepAmenities },
   { title: 'Final Review', component: StepReview },
 ];
 
@@ -41,7 +43,7 @@ const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, se
   const theme = useThemeColor();
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const keyboardVerticalOffset = Platform.OS === 'ios' ? 0 : 0;
+  const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 100;
   const [loading, setLoading] = useState(false);
   
   const {
@@ -61,6 +63,7 @@ const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, se
       setLoading(true);
       const payload = {
         ...values,
+        amenities: values.amenities || [],
         area_size: Number(values.area_size),
         bedrooms: values.bedrooms ? Number(values.bedrooms) : null,
         bathrooms: values.bathrooms ? Number(values.bathrooms) : null,
@@ -116,6 +119,14 @@ const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, se
     }
   };
 
+  const handleClose = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/dashboard');
+    }
+  };
+
   const handleNext = async () => {
     if (isLastStep) {
       await handleSubmitListing();
@@ -130,7 +141,7 @@ const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, se
       <View style={[styles.headerContainer, { paddingTop: insets.top }]}>
         <View style={styles.headerContent}>
           <TouchableOpacity 
-            onPress={isFirstStep ? () => router.back() : goToPreviousStep}
+            onPress={isFirstStep ? handleClose : goToPreviousStep}
             style={[styles.iconButton, { backgroundColor: theme.card }]}
           >
             <Ionicons name={isFirstStep ? "close" : "arrow-back"} size={22} color={theme.text} />
@@ -162,7 +173,7 @@ const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, se
       {/* Content Area */}
       <KeyboardAvoidingView
         style={styles.content}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={keyboardVerticalOffset}
       >
         <ActiveComponent onEditStep={(idx: number) => setCurrentStep(idx)} />

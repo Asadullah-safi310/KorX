@@ -217,7 +217,7 @@ const StepDetails = () => {
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Property Details</AppText>
       <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
         Tell us more about the property&apos;s size and features.

@@ -29,6 +29,10 @@ export const typography = {
     fontSize: 12,
     fontFamily: fonts.regular,
   },
+  tiny: {
+    fontSize: 10,
+    fontFamily: fonts.regular,
+  },
 };
 
 export type TypographyVariant = keyof typeof typography;

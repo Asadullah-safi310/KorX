@@ -41,4 +41,5 @@ const styles = StyleSheet.create({
   body: typography.body,
   small: typography.small,
   caption: typography.caption,
+  tiny: typography.tiny,
 });

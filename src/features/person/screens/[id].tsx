@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Linking, Image, Platform } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, TouchableOpacity, Linking, Platform } from 'react-native';
+import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { observer } from 'mobx-react-lite';
@@ -11,6 +12,7 @@ import { propertyService } from '../../../services/property.service';
 import { userService } from '../../../services/user.service';
 import { useThemeColor } from '../../../hooks/useThemeColor';
 import ScreenLayout from '../../../components/ScreenLayout';
+import { AppText } from '../../../components/AppText';
 import { BlurView } from 'expo-blur';
 
 
@@ -107,12 +109,12 @@ const PersonDetailsScreen = observer(() => {
       <ScreenLayout scrollable backgroundColor={theme.background}>
         <View style={styles.center}>
           <MaterialCommunityIcons name="account-search-outline" size={80} color={theme.border} />
-          <Text style={[styles.errorText, { color: theme.subtext }]}>Profile not found</Text>
+          <AppText weight="medium" color={theme.subtext} style={styles.errorText}>Profile not found</AppText>
           <TouchableOpacity 
             style={[styles.backButton, { backgroundColor: theme.primary }]} 
             onPress={() => router.back()}
           >
-            <Text style={[styles.backButtonText, { color: '#fff' }]}>Go Back</Text>
+            <AppText weight="bold" color="#fff" style={styles.backButtonText}>Go Back</AppText>
           </TouchableOpacity>
         </View>
       </ScreenLayout>
@@ -133,9 +135,9 @@ const PersonDetailsScreen = observer(() => {
         <TouchableOpacity onPress={() => router.back()} style={[styles.iconButton, { backgroundColor: theme.card }]}>
           <Ionicons name="arrow-back" size={22} color={theme.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.text }]}>
+        <AppText variant="h2" weight="bold" color={theme.text}>
           {isUser ? 'Professional Profile' : 'Contact Details'}
-        </Text>
+        </AppText>
         <TouchableOpacity style={[styles.iconButton, { backgroundColor: theme.card }]}>
           <Ionicons name="ellipsis-horizontal" size={22} color={theme.text} />
         </TouchableOpacity>
@@ -147,10 +149,10 @@ const PersonDetailsScreen = observer(() => {
           <Avatar user={person} size="xl" />
           <View style={[styles.onlineBadge, { backgroundColor: theme.success, borderColor: theme.card }]} />
         </View>
-        <Text style={[styles.name, { color: theme.text }]}>{name}</Text>
+        <AppText variant="h1" weight="black" color={theme.text} style={styles.name}>{name}</AppText>
         <View style={[styles.roleBadge, { backgroundColor: theme.primary + '15' }]}>
           <MaterialCommunityIcons name={isUser ? "shield-check" : "account-circle"} size={14} color={theme.primary} />
-          <Text style={[styles.roleText, { color: theme.primary }]}>{role.toUpperCase()}</Text>
+          <AppText variant="tiny" weight="black" color={theme.primary} style={styles.roleText}>{role.toUpperCase()}</AppText>
         </View>
         
         {/* Quick Actions */}
@@ -161,7 +163,7 @@ const PersonDetailsScreen = observer(() => {
             style={[styles.actionBtn, { backgroundColor: theme.background, borderColor: theme.border }, !person.phone && styles.disabledBtn]}
           >
             <Ionicons name="call" size={20} color={theme.primary} />
-            <Text style={[styles.actionLabel, { color: theme.text }]}>Call</Text>
+            <AppText variant="tiny" weight="bold" color={theme.text}>Call</AppText>
           </TouchableOpacity>
           
           <TouchableOpacity 
@@ -170,14 +172,14 @@ const PersonDetailsScreen = observer(() => {
             style={[styles.actionBtn, { backgroundColor: theme.background, borderColor: theme.border }, !person.email && styles.disabledBtn]}
           >
             <Ionicons name="mail" size={20} color={theme.primary} />
-            <Text style={[styles.actionLabel, { color: theme.text }]}>Email</Text>
+            <AppText variant="tiny" weight="bold" color={theme.text}>Email</AppText>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={[styles.actionBtn, { backgroundColor: theme.background, borderColor: theme.border }]}
           >
             <Ionicons name="chatbubble-ellipses" size={20} color={theme.primary} />
-            <Text style={[styles.actionLabel, { color: theme.text }]}>Chat</Text>
+            <AppText variant="tiny" weight="bold" color={theme.text}>Chat</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -185,7 +187,7 @@ const PersonDetailsScreen = observer(() => {
       {/* Info Sections */}
       <View style={styles.sectionsContainer}>
         <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>Contact Information</Text>
+          <AppText variant="title" weight="bold" color={theme.text}>Contact Information</AppText>
           <MaterialCommunityIcons name="information-outline" size={18} color={theme.subtext} />
         </View>
 
@@ -207,14 +209,15 @@ const PersonDetailsScreen = observer(() => {
         {person.id_card_path && (
           <>
             <View style={[styles.sectionHeader, { marginTop: 24 }]}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>Verification Document</Text>
+              <AppText style={[styles.sectionTitle, { color: theme.text }]}>Verification Document</AppText>
               <MaterialCommunityIcons name="shield-account" size={18} color={theme.success} />
             </View>
             <TouchableOpacity activeOpacity={0.9} style={styles.idCardWrapper}>
               <Image 
                 source={{ uri: getImageUrl(person.id_card_path) ?? undefined }} 
                 style={[styles.idCardImage, { backgroundColor: theme.card }]} 
-                resizeMode="cover"
+                contentFit="cover"
+                transition={300}
               />
               <BlurView intensity={30} style={styles.imageOverlay}>
                 <Ionicons name="expand" size={24} color="#fff" />
@@ -225,12 +228,12 @@ const PersonDetailsScreen = observer(() => {
 
         {/* Property Listings */}
         <View style={[styles.sectionHeader, { marginTop: 24 }]}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>
+          <AppText style={[styles.sectionTitle, { color: theme.text }]}>
             {isUser ? 'Active Listings' : 'Associated Properties'}
-          </Text>
-          <Text style={[styles.countBadge, { color: theme.primary, backgroundColor: theme.primary + '15' }]}>
+          </AppText>
+          <AppText style={[styles.countBadge, { color: theme.primary, backgroundColor: theme.primary + '15' }]}>
             {properties.length}
-          </Text>
+          </AppText>
         </View>
 
         {loadingProperties ? (
@@ -250,7 +253,7 @@ const PersonDetailsScreen = observer(() => {
         ) : (
           <View style={[styles.emptyCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
             <MaterialCommunityIcons name="home-off" size={40} color={theme.border} />
-            <Text style={[styles.emptyText, { color: theme.subtext }]}>No properties listed publicly</Text>
+            <AppText style={[styles.emptyText, { color: theme.subtext }]}>No properties listed publicly</AppText>
           </View>
         )}
       </View>
@@ -264,8 +267,8 @@ const InfoItem = ({ icon, label, value, theme }: any) => (
       <MaterialCommunityIcons name={icon} size={20} color={theme.primary} />
     </View>
     <View style={styles.infoText}>
-      <Text style={[styles.infoLabel, { color: theme.subtext }]}>{label}</Text>
-      <Text style={[styles.infoValue, { color: theme.text }]}>{value}</Text>
+      <AppText style={[styles.infoLabel, { color: theme.subtext }]}>{label}</AppText>
+      <AppText style={[styles.infoValue, { color: theme.text }]}>{value}</AppText>
     </View>
   </View>
 );

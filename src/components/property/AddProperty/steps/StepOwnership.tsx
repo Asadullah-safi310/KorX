@@ -40,7 +40,7 @@ const StepOwnership = observer(() => {
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       {/* Property Type Selection */}
       <View style={styles.section}>
         <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Property Category</AppText>

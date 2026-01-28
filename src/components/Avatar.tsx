@@ -1,9 +1,11 @@
 import React from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { getImageUrl } from '../utils/mediaUtils';
 import { useThemeColor } from '../hooks/useThemeColor';
 import { AppText } from './AppText';
+import { observer } from 'mobx-react-lite';
 
 interface AvatarProps {
   user?: {
@@ -13,7 +15,7 @@ interface AvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl' | number;
 }
 
-const Avatar: React.FC<AvatarProps> = ({ user, size = 'md' }) => {
+const AvatarComponent: React.FC<AvatarProps> = ({ user, size = 'md' }) => {
   const themeColors = useThemeColor();
   const getAvatarSize = () => {
     if (typeof size === 'number') return size;
@@ -27,16 +29,11 @@ const Avatar: React.FC<AvatarProps> = ({ user, size = 'md' }) => {
 
   const avatarSize = getAvatarSize();
 
+  // Try to find profile picture in multiple locations (top level or nested User object)
+  const profilePic = user?.profile_picture || (user as any)?.User?.profile_picture;
+  const finalImageSource = getImageUrl(profilePic);
 
-  const imageUrl = user?.profile_picture ? getImageUrl(user.profile_picture) : null;
-  
-  // Use user.profile_picture directly if it's a local file path or data URI that getImageUrl might have missed
-  const finalImageSource = (user?.profile_picture && (
-    user.profile_picture.startsWith('file://') || 
-    user.profile_picture.startsWith('content://') ||
-    user.profile_picture.startsWith('data:') ||
-    user.profile_picture.startsWith('/') // absolute local path
-  )) ? user.profile_picture : imageUrl;
+  const [imageError, setImageError] = React.useState(false);
 
   const initials = user?.full_name
     ? user.full_name
@@ -54,10 +51,13 @@ const Avatar: React.FC<AvatarProps> = ({ user, size = 'md' }) => {
       borderRadius: avatarSize / 2,
       backgroundColor: themeColors.gray[200]
     }]}>
-      {finalImageSource ? (
+      {finalImageSource && !imageError ? (
         <Image
           source={{ uri: finalImageSource }}
           style={{ width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2 }}
+          contentFit="cover"
+          transition={200}
+          onError={() => setImageError(true)}
         />
       ) : (
         <View style={[styles.placeholder, { 
@@ -84,6 +84,8 @@ const Avatar: React.FC<AvatarProps> = ({ user, size = 'md' }) => {
     </View>
   );
 };
+
+const Avatar = observer(AvatarComponent);
 
 const styles = StyleSheet.create({
   container: {

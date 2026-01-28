@@ -204,7 +204,7 @@ const ProfileScreen = observer(() => {
             <MenuLink 
               icon="handshake-outline" 
               title="Transaction History" 
-              onPress={() => router.push('/(tabs)/deals')} 
+              onPress={() => router.push('/deal')} 
               theme={themeColors}
             />
           )}

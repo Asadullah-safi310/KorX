@@ -17,13 +17,16 @@ const PropertyCreateScreen = observer(() => {
   const background = theme.background;
   const primary = theme.primary;
 
+  const isLoading = authStore.isLoading;
+  const isAuthenticated = authStore.isAuthenticated;
+
   const [initialLoading, setInitialLoading] = useState(isEditing);
   const [initialValues, setInitialValues] = useState<any>(null);
 
   const fetchPropertyData = useCallback(async () => {
-    if (authStore.isLoading) return;
+    if (isLoading) return;
 
-    if (!authStore.isAuthenticated) {
+    if (!isAuthenticated) {
       router.replace('/(auth)/login');
       return;
     }
@@ -54,6 +57,7 @@ const PropertyCreateScreen = observer(() => {
             rent_price: property.rent_price?.toString() || '',
             media: [],
             existingMedia: (property.photos || []).map((p: string) => ({ url: p, type: 'photo' })),
+            amenities: property.amenities || [],
           });
         }
       } catch {
@@ -63,11 +67,19 @@ const PropertyCreateScreen = observer(() => {
         setInitialLoading(false);
       }
     }
-  }, [id, isEditing, router]);
+  }, [id, isEditing, router, isLoading, isAuthenticated]);
 
   useEffect(() => {
     fetchPropertyData();
-  }, [fetchPropertyData, authStore.isLoading]);
+  }, [fetchPropertyData]);
+
+  const handleFinish = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/dashboard');
+    }
+  };
 
   if (initialLoading || authStore.isLoading) {
     return (
@@ -82,7 +94,7 @@ const PropertyCreateScreen = observer(() => {
       initial={initialValues} 
       isEditing={isEditing} 
       propertyId={id}
-      onFinish={() => router.back()} 
+      onFinish={handleFinish} 
     />
   );
 });

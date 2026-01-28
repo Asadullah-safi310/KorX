@@ -10,7 +10,6 @@ import {
   Modal,
   FlatList,
   Platform,
-  Dimensions
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -117,6 +116,15 @@ const CreateDealScreen = observer(() => {
     setSelectedBuyer(person);
     setFormData(prev => ({ ...prev, buyer_person_id: String(person.id) }));
     setPersonModalVisible(false);
+  };
+
+  const handleProfilePress = (user: any) => {
+    if (!user) return;
+    if (user.user_id) {
+      router.push(`/person/user_${user.user_id}`);
+    } else if (user.id) {
+      router.push(`/person/${user.id}`);
+    }
   };
 
   const validate = () => {
@@ -269,7 +277,11 @@ const CreateDealScreen = observer(() => {
 
             {/* Owner Info (Read-only) */}
             {currentOwner && (
-              <View style={[styles.ownerCard, { backgroundColor: theme.primary + '08', borderColor: theme.primary + '20' }]}>
+              <TouchableOpacity 
+                style={[styles.ownerCard, { backgroundColor: theme.primary + '08', borderColor: theme.primary + '20' }]}
+                onPress={() => handleProfilePress(currentOwner)}
+                activeOpacity={0.7}
+              >
                 <View style={styles.ownerHeader}>
                   <Avatar user={currentOwner} size="sm" />
                   <View style={styles.ownerText}>
@@ -278,7 +290,7 @@ const CreateDealScreen = observer(() => {
                   </View>
                 </View>
                 <MaterialCommunityIcons name="shield-check" size={20} color={theme.primary} />
-              </View>
+              </TouchableOpacity>
             )}
 
             {/* Buyer Selector */}

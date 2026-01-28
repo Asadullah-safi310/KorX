@@ -3,8 +3,14 @@ import * as FileSystem from 'expo-file-system';
 
 export const getFileUrl = (path: string | null) => {
   if (!path) return null;
-  if (path.startsWith('http') || path.startsWith('file://') || path.startsWith('content://')) return path;
-  return `${BASE_URL}/${path.replace(/\\/g, '/')}`;
+  if (path.startsWith('http') || path.startsWith('file://') || path.startsWith('content://') || path.startsWith('data:')) return path;
+  
+  // Ensure we don't have double slashes when joining
+  const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+  const cleanBaseUrl = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+  
+  const finalUrl = `${cleanBaseUrl}/${cleanPath.replace(/\\/g, '/')}`;
+  return finalUrl;
 };
 
 export const getImageUrl = (imagePath: string | null) => {

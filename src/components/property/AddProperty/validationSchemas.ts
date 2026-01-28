@@ -31,6 +31,9 @@ export const initialValues = {
   // Step 5
   media: [], // This will store new files to upload
   existingMedia: [], // This will store already uploaded media (for edit mode)
+
+  // Step 7
+  amenities: [],
 };
 
 export const Step1Schema = Yup.object().shape({
@@ -72,7 +75,11 @@ export const Step5Schema = Yup.object().shape({
     return (media?.length || 0) + (existingMedia?.length || 0) > 0;
 });
 
-export const Step6Schema = Yup.object().shape({});
+export const Step6Schema = Yup.object().shape({
+  amenities: Yup.array(),
+});
+
+export const Step7Schema = Yup.object().shape({});
 
 export const stepSchemas = [
   Step1Schema,
@@ -81,4 +88,5 @@ export const stepSchemas = [
   Step4Schema,
   Step5Schema,
   Step6Schema,
+  Step7Schema,
 ];

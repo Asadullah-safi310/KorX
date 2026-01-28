@@ -52,7 +52,7 @@ const StepLocation = () => {
   const isMapAvailable = Platform.OS !== 'web' && MapView;
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Map Placement</AppText>
       <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
         {isMapAvailable 

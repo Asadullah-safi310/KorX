@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { Image } from 'expo-image';
 import { useFormikContext } from 'formik';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColor } from '../../../../hooks/useThemeColor';
@@ -22,10 +23,10 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
   const ReviewSection = ({ title, stepIndex, children }: { title: string; stepIndex: number; children: React.ReactNode }) => (
     <View style={[styles.section, { borderColor: theme.border, backgroundColor: theme.card }]}>
       <View style={styles.sectionHeader}>
-        <AppText variant="caption" fontWeight="800" style={[{ color: theme.text }, styles.sectionTitle]}>{title}</AppText>
+        <AppText variant="caption" weight="bold" style={[{ color: theme.text }, styles.sectionTitle]}>{title}</AppText>
         <TouchableOpacity onPress={() => onEditStep(stepIndex)} style={styles.editBtn}>
           <Ionicons name="create-outline" size={16} color={theme.primary} />
-          <AppText variant="tiny" fontWeight="700" style={{ color: theme.primary }}>Edit</AppText>
+          <AppText variant="tiny" weight="bold" style={{ color: theme.primary }}>Edit</AppText>
         </TouchableOpacity>
       </View>
       <View style={styles.sectionContent}>
@@ -38,15 +39,15 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
     <View style={styles.infoRow}>
       <View style={styles.infoLabelContainer}>
         {icon && <MaterialCommunityIcons name={icon} size={16} color={theme.subtext} style={{ marginRight: 6 }} />}
-        <AppText variant="caption" fontWeight="500" style={{ color: theme.subtext }}>{label}</AppText>
+        <AppText variant="caption" weight="medium" style={{ color: theme.subtext }}>{label}</AppText>
       </View>
-      <AppText variant="caption" fontWeight="700" style={[{ color: theme.text }, styles.infoValue]}>{value || 'N/A'}</AppText>
+      <AppText variant="caption" weight="bold" style={[{ color: theme.text }, styles.infoValue]}>{value || 'N/A'}</AppText>
     </View>
   );
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-      <AppText variant="h1" fontWeight="800" style={{ color: theme.text }}>Review Your Listing</AppText>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+      <AppText variant="h1" weight="bold" style={{ color: theme.text }}>Review Your Listing</AppText>
       <AppText variant="caption" style={[{ color: theme.subtext }, styles.subTitle]}>
         Please double-check all details before submitting your property.
       </AppText>
@@ -72,10 +73,10 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
       <ReviewSection title="Map Location" stepIndex={2}>
         <View style={styles.coordsRow}>
           <View style={styles.coordBadge}>
-            <AppText variant="tiny" fontWeight="700" style={styles.coordText}>Lat: {values.latitude ? values.latitude.toFixed(6) : 'Not set'}</AppText>
+            <AppText variant="tiny" weight="bold" style={styles.coordText}>Lat: {values.latitude ? values.latitude.toFixed(6) : 'Not set'}</AppText>
           </View>
           <View style={styles.coordBadge}>
-            <AppText variant="tiny" fontWeight="700" style={styles.coordText}>Lng: {values.longitude ? values.longitude.toFixed(6) : 'Not set'}</AppText>
+            <AppText variant="tiny" weight="bold" style={styles.coordText}>Lng: {values.longitude ? values.longitude.toFixed(6) : 'Not set'}</AppText>
           </View>
         </View>
       </ReviewSection>
@@ -92,10 +93,10 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
       <ReviewSection title="Media" stepIndex={4}>
         <View style={styles.mediaPreviewList}>
           {values.existingMedia?.map((item: any, idx: number) => (
-            <Image key={`ext-${idx}`} source={{ uri: getImageUrl(item.url) || undefined }} style={styles.mediaThumb} />
+            <Image key={`ext-${idx}`} source={{ uri: getImageUrl(item.url) || undefined }} style={styles.mediaThumb} contentFit="cover" transition={200} />
           ))}
           {values.media?.filter((m: any) => m.category === 'image').map((item: any, idx: number) => (
-            <Image key={`new-${idx}`} source={{ uri: item.uri || undefined }} style={styles.mediaThumb} />
+            <Image key={`new-${idx}`} source={{ uri: item.uri || undefined }} style={styles.mediaThumb} contentFit="cover" transition={200} />
           ))}
           {values.media?.filter((m: any) => m.category !== 'image').map((item: any, idx: number) => (
              <View key={`file-${idx}`} style={[styles.mediaThumb, styles.fileThumb, { backgroundColor: theme.border + '30' }]}>
@@ -104,8 +105,22 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
           ))}
         </View>
         {(values.media.length === 0 && values.existingMedia?.length === 0) && (
-            <Text style={{ color: theme.subtext }}>No media uploaded</Text>
+            <AppText variant="caption" style={{ color: theme.subtext, textAlign: 'center', marginTop: 10 }}>No media uploaded</AppText>
         )}
+      </ReviewSection>
+
+      <ReviewSection title="Amenities" stepIndex={5}>
+        <View style={styles.amenitiesGrid}>
+          {values.amenities && values.amenities.length > 0 ? (
+            values.amenities.map((amenity: string, idx: number) => (
+              <View key={idx} style={[styles.amenityBadge, { backgroundColor: theme.primary + '15' }]}>
+                <AppText variant="tiny" weight="bold" style={{ color: theme.primary }}>{amenity}</AppText>
+              </View>
+            ))
+          ) : (
+            <AppText variant="caption" style={{ color: theme.subtext }}>No amenities selected</AppText>
+          )}
+        </View>
       </ReviewSection>
     </ScrollView>
   );
@@ -214,6 +229,16 @@ const styles = StyleSheet.create({
   fileThumb: { 
     justifyContent: 'center', 
     alignItems: 'center',
+  },
+  amenitiesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  amenityBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
   },
 });
 

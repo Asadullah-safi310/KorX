@@ -31,6 +31,15 @@ const DealDetailsScreen = observer(() => {
     }
   };
 
+  const handleProfilePress = (user: any) => {
+    if (!user) return;
+    if (user.user_id) {
+      router.push(`/person/user_${user.user_id}`);
+    } else if (user.id) {
+      router.push(`/person/${user.id}`);
+    }
+  };
+
   const getStatusConfig = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'completed': 
@@ -219,7 +228,11 @@ const DealDetailsScreen = observer(() => {
 
       {/* Agent Charge */}
       <Text style={[styles.sectionTitle, { color: theme.text }]}>Agent in Charge</Text>
-      <View style={[styles.agentCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+      <TouchableOpacity 
+        style={[styles.agentCard, { backgroundColor: theme.card, borderColor: theme.border }]}
+        onPress={() => handleProfilePress(deal.Agent)}
+        activeOpacity={0.7}
+      >
         <Avatar user={deal.Agent} size="md" />
         <View style={styles.agentInfo}>
           <Text style={[styles.agentName, { color: theme.text }]}>{deal.Agent?.full_name}</Text>
@@ -228,7 +241,7 @@ const DealDetailsScreen = observer(() => {
         <View style={[styles.agentBadge, { backgroundColor: theme.background }]}>
           <Text style={[styles.agentBadgeText, { color: theme.primary }]}>Verified</Text>
         </View>
-      </View>
+      </TouchableOpacity>
 
     </ScreenLayout>
   );

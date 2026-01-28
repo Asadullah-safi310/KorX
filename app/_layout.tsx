@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { useColorScheme, View, ActivityIndicator } from "react-native";
+import { useColorScheme } from "react-native";
 import { Observer } from "mobx-react-lite";
 import * as Font from 'expo-font';
 import { useEffect, useState } from 'react';

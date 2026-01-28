@@ -69,7 +69,7 @@ const StepPricing = () => {
   );
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <AppText variant="h2" fontWeight="800" style={{ color: theme.text }}>Pricing Strategy</AppText>
       <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
         How would you like to list your property? You can select one or both.
