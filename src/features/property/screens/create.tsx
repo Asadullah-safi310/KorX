@@ -54,7 +54,9 @@ const PropertyCreateScreen = observer(() => {
             is_available_for_sale: !!property.is_available_for_sale,
             is_available_for_rent: !!property.is_available_for_rent,
             sale_price: property.sale_price?.toString() || '',
+            sale_currency: property.sale_currency || 'AF',
             rent_price: property.rent_price?.toString() || '',
+            rent_currency: property.rent_currency || 'AF',
             media: [],
             existingMedia: (property.photos || []).map((p: string) => ({ url: p, type: 'photo' })),
             amenities: Array.isArray(property.amenities) 

@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
-import { View, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { View, TouchableOpacity, ScrollView, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import { AppText } from '../../../AppText';
 import { useFormikContext } from 'formik';
 import { observer } from 'mobx-react-lite';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import personStore from '../../../../stores/PersonStore';
+import authStore from '../../../../stores/AuthStore';
 import { useThemeColor } from '../../../../hooks/useThemeColor';
 import Avatar from '../../../../components/Avatar';
+import { PROPERTY_CATEGORY_TYPES, PROPERTY_TYPES_CONFIG } from '../validationSchemas';
 
 const { width } = Dimensions.get('window');
 
@@ -16,16 +18,24 @@ const StepOwnership = observer(() => {
 
   useEffect(() => {
     if (personStore.agents.length === 0) personStore.fetchAgents();
+    if (authStore.isAdmin && personStore.persons.length === 0) personStore.fetchPersons();
   }, []);
 
-  const propertyTypes = [
-    { label: 'House', icon: 'home-variant-outline', activeIcon: 'home-variant' },
-    { label: 'Apartment', icon: 'office-building-marker-outline', activeIcon: 'office-building-marker' },
-    { label: 'Villa', icon: 'home-modern', activeIcon: 'home-modern' },
-    { label: 'Commercial', icon: 'storefront-outline', activeIcon: 'storefront' },
-    { label: 'Land', icon: 'map-outline', activeIcon: 'map' },
-    { label: 'Plot', icon: 'border-all', activeIcon: 'border-all' },
-  ];
+  const categories = Object.keys(PROPERTY_CATEGORY_TYPES);
+  
+  const allowedTypes = values.property_category 
+    ? PROPERTY_CATEGORY_TYPES[values.property_category as keyof typeof PROPERTY_CATEGORY_TYPES] 
+    : [];
+
+  const propertyTypes = PROPERTY_TYPES_CONFIG.filter(type => allowedTypes.includes(type.label));
+
+  const handleCategoryChange = (category: string) => {
+    setFieldValue('property_category', category);
+    const newAllowedTypes = PROPERTY_CATEGORY_TYPES[category as keyof typeof PROPERTY_CATEGORY_TYPES];
+    if (!newAllowedTypes.includes(values.property_type)) {
+      setFieldValue('property_type', '');
+    }
+  };
   
   const purposes = [
     { label: 'Sale', value: 'SALE', icon: 'handshake-outline' },
@@ -41,10 +51,41 @@ const StepOwnership = observer(() => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      {/* Property Type Selection */}
+      {/* Property Category Selection */}
       <View style={styles.section}>
         <AppText variant="h2" weight="bold" style={{ color: theme.text }}>Property Category</AppText>
-        <AppText variant="small" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>What kind of property are you listing?</AppText>
+        <AppText variant="small" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>Select the category of your property</AppText>
+        
+        <View style={styles.categoryRow}>
+          {categories.map((cat) => {
+            const isActive = values.property_category === cat;
+            return (
+              <TouchableOpacity
+                key={cat}
+                activeOpacity={0.7}
+                style={[
+                  styles.categoryCard,
+                  { backgroundColor: theme.card, borderColor: theme.border },
+                  isActive && { borderColor: theme.primary, backgroundColor: theme.primary + '08' },
+                ]}
+                onPress={() => handleCategoryChange(cat)}
+              >
+                <AppText weight="bold" style={{ color: isActive ? theme.text : theme.subtext }}>
+                  {cat}
+                </AppText>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        {renderError('property_category')}
+      </View>
+
+      {/* Property Type Selection */}
+      <View style={[styles.section, !values.property_category && { opacity: 0.5 }]}>
+        <AppText variant="h2" weight="bold" style={{ color: theme.text }}>Property Type</AppText>
+        <AppText variant="small" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
+          {!values.property_category ? 'Please select a category first' : 'What kind of property are you listing?'}
+        </AppText>
         
         <View style={styles.grid}>
           {propertyTypes.map((type) => {
@@ -52,6 +93,7 @@ const StepOwnership = observer(() => {
             return (
               <TouchableOpacity
                 key={type.label}
+                disabled={!values.property_category}
                 activeOpacity={0.7}
                 style={[
                   styles.typeCard,
@@ -63,7 +105,7 @@ const StepOwnership = observer(() => {
                 <View style={[styles.iconCircle, isActive && { backgroundColor: theme.primary + '15' }]}>
                   <MaterialCommunityIcons
                     name={(isActive ? type.activeIcon : type.icon) as any}
-                    size={28}
+                    size={22}
                     color={isActive ? theme.primary : theme.subtext}
                   />
                 </View>
@@ -115,6 +157,65 @@ const StepOwnership = observer(() => {
         </View>
         {renderError('purpose')}
       </View>
+
+      {/* Owner Assignment (Admin Only) */}
+      {authStore.isAdmin && (
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <View>
+              <AppText variant="h2" weight="bold" style={{ color: theme.text }}>Assign Owner</AppText>
+              <AppText variant="small" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>Select the property owner</AppText>
+            </View>
+            <View style={[styles.optionalBadge, { backgroundColor: theme.border + '30' }]}>
+              <AppText variant="tiny" weight="bold" style={{ color: theme.subtext }}>ADMIN</AppText>
+            </View>
+          </View>
+          
+          {personStore.loading && personStore.persons.length === 0 ? (
+            <ActivityIndicator size="small" color={theme.primary} style={{ marginVertical: 20 }} />
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.agentScroll}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={[
+                  styles.agentCard,
+                  { backgroundColor: theme.card, borderColor: theme.border },
+                  !values.owner_person_id && { borderColor: theme.primary, backgroundColor: theme.primary + '08' },
+                ]}
+                onPress={() => setFieldValue('owner_person_id', '')}
+              >
+                <View style={[styles.noneAvatar, { backgroundColor: theme.border + '50' }]}>
+                  <Ionicons name="person-outline" size={24} color={theme.subtext} />
+                </View>
+                <AppText variant="tiny" weight="bold" style={{ color: !values.owner_person_id ? theme.text : theme.subtext }}>Current User</AppText>
+              </TouchableOpacity>
+
+              {personStore.persons.map((person) => {
+                const isActive = values.owner_person_id === String(person.person_id);
+                return (
+                  <TouchableOpacity
+                    key={person.person_id}
+                    activeOpacity={0.7}
+                    style={[
+                      styles.agentCard,
+                      { backgroundColor: theme.card, borderColor: theme.border },
+                      isActive && { borderColor: theme.primary, backgroundColor: theme.primary + '08' },
+                    ]}
+                    onPress={() => setFieldValue('owner_person_id', String(person.person_id))}
+                  >
+                    <Avatar user={person} size="md" />
+                    <AppText variant="tiny" weight="bold" style={{ color: isActive ? theme.text : theme.subtext }} numberOfLines={1}>
+                      {person.full_name?.split(' ')[0] || 'Unknown'}
+                    </AppText>
+                    <AppText variant="tiny" weight="medium" style={{ color: theme.subtext }}>Owner</AppText>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          )}
+          {renderError('owner_person_id')}
+        </View>
+      )}
 
       {/* Agent Selection */}
       <View style={styles.section}>
@@ -189,6 +290,19 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     marginTop: 2,
   },
+  categoryRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  categoryCard: {
+    flex: 1,
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+  },
   optionalBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -197,25 +311,25 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 8,
   },
   typeCard: {
-    width: (width - 40 - 24) / 3,
-    aspectRatio: 0.9,
-    borderRadius: 20,
+    width: (width - 40 - 24) / 4,
+    aspectRatio: 0.85,
+    borderRadius: 16,
     borderWidth: 1.5,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 10,
+    padding: 6,
     position: 'relative',
   },
   iconCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   checkBadge: {
     position: 'absolute',

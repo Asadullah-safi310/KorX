@@ -71,19 +71,25 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
     }
   };
 
-  const formatPrice = (price: any) => {
+  const formatPrice = (price: any, currency: string = 'AF') => {
     if (!price) return '-';
     const num = parseFloat(price);
-    if (num >= 10000000) return `Rs ${(num / 10000000).toFixed(2)} Cr`;
-    if (num >= 100000) return `Rs ${(num / 100000).toFixed(2)} Lac`;
-    return `Rs ${num.toLocaleString()}`;
+    const symbol = currency === 'USD' ? '$' : 'AF';
+    
+    if (currency === 'USD') {
+      return `$${num.toLocaleString()}`;
+    }
+
+    if (num >= 10000000) return `${(num / 10000000).toFixed(2)} Cr ${symbol}`;
+    if (num >= 100000) return `${(num / 100000).toFixed(2)} Lac ${symbol}`;
+    return `${num.toLocaleString()} ${symbol}`;
   };
 
   const getPropertyDisplayPrice = (property: any) => {
     if (property.purpose === 'SALE' || property.purpose === 'BOTH') {
-      return property.sale_price ? `Rs ${parseFloat(property.sale_price).toLocaleString()}` : 'Price on Request';
+      return property.sale_price ? formatPrice(property.sale_price, property.sale_currency) : 'Price on Request';
     }
-    return property.rent_price ? `Rs ${parseFloat(property.rent_price).toLocaleString()} / mo` : 'Price on Request';
+    return property.rent_price ? `${formatPrice(property.rent_price, property.rent_currency)} / mo` : 'Price on Request';
   };
 
   const isSale = property.is_available_for_sale || property.purpose === 'SALE' || property.purpose === 'BOTH';
@@ -326,7 +332,7 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
           <View style={styles.priceRow}>
             <View style={styles.priceContainer}>
               <AppText variant="title" weight="bold" numberOfLines={1}> 
-                {isSale ? formatPrice(property.sale_price) : formatPrice(property.rent_price)}
+                {isSale ? formatPrice(property.sale_price, property.sale_currency) : formatPrice(property.rent_price, property.rent_currency)}
                 <AppText variant="caption" color={themeColors.mutedText}> / {isRent && !isSale ? 'mo' : 'yr'}</AppText>
               </AppText>
             </View>

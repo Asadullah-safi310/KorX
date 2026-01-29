@@ -371,6 +371,8 @@ const PropertyDetailsScreen = observer(() => {
 
   const photos = property.photos || [];
   const price = parseFloat(property.purpose === 'SALE' ? property.sale_price : property.rent_price);
+  const currency = property.purpose === 'SALE' ? property.sale_currency : property.rent_currency;
+  const currencySymbol = currency === 'USD' ? '$' : 'AF';
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -457,7 +459,7 @@ const PropertyDetailsScreen = observer(() => {
           <View style={styles.headerInfo}>
             <View style={styles.priceRow}>
               <AppText variant="h2" weight="bold" color={primaryColor}>
-                Rs {price.toLocaleString()}
+                {currency === 'USD' ? `${currencySymbol}${price.toLocaleString()}` : `${price.toLocaleString()} ${currencySymbol}`}
                 {property.purpose === 'RENT' && <AppText variant="body" weight="medium" color={theme.subtext}> / month</AppText>}
               </AppText>
               <View style={[styles.statusBadge, { backgroundColor: property.is_available_for_sale || property.is_available_for_rent ? '#dcfce7' : '#fee2e2' }]}>

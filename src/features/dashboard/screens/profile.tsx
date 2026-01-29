@@ -34,6 +34,7 @@ const ProfileScreen = observer(() => {
   const userId = user?.user_id;
   const isAuthenticated = authStore.isAuthenticated;
   const isAgent = authStore.isAgent;
+  const isAdmin = authStore.isAdmin;
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchData = useCallback(async () => {
@@ -194,6 +195,14 @@ const ProfileScreen = observer(() => {
 
         {/* Menu Items */}
         <View style={[styles.menuCard, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
+          {isAdmin && (
+            <MenuLink 
+              icon="shield-checkmark-outline" 
+              title="Admin Dashboard" 
+              onPress={() => router.push('/admin')} 
+              theme={themeColors}
+            />
+          )}
           <MenuLink 
             icon="home-outline" 
             title="My Properties" 

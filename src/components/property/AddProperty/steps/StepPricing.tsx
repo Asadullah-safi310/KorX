@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TextInput, Switch, StyleSheet, ScrollView, Platform } from 'react-native';
+import { View, TextInput, Switch, StyleSheet, ScrollView, Platform, TouchableOpacity } from 'react-native';
 import { useFormikContext } from 'formik';
 import { useThemeColor } from '../../../../hooks/useThemeColor';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -16,57 +16,86 @@ const StepPricing = () => {
     return null;
   };
 
-  const OptionCard = ({ type, label, isActive, onToggle, priceValue, priceField, placeholder }: any) => (
-    <View style={[
-      styles.optionCard, 
-      { backgroundColor: theme.card, borderColor: isActive ? theme.primary : theme.border },
-      isActive && { backgroundColor: theme.primary + '05' }
-    ]}>
-      <View style={styles.optionHeader}>
-        <View style={styles.optionInfo}>
-          <View style={[styles.typeIcon, { backgroundColor: isActive ? theme.primary + '15' : theme.border + '30' }]}>
-            <MaterialCommunityIcons 
-              name={type === 'sale' ? 'tag-outline' : 'calendar-clock-outline'} 
-              size={24} 
-              color={isActive ? theme.primary : theme.subtext} 
-            />
-          </View>
-          <View>
-            <AppText weight="bold" style={[{ color: theme.text }, styles.optionLabel]}>{label}</AppText>
-            <AppText variant="tiny" weight="medium" style={[{ color: theme.subtext }, styles.optionSub]}>
-              {isActive ? 'Currently active' : 'Tap to enable'}
-            </AppText>
-          </View>
-        </View>
-        <Switch
-          value={isActive}
-          onValueChange={onToggle}
-          trackColor={{ true: theme.primary, false: theme.border }}
-          thumbColor={Platform.OS === 'ios' ? undefined : (isActive ? '#fff' : '#f4f3f4')}
-        />
-      </View>
+  const OptionCard = ({ type, label, isActive, onToggle, priceValue, priceField, currencyValue, currencyField, placeholder }: any) => {
+    const currencies = [
+      { label: 'AF', value: 'AF' },
+      { label: '$', value: 'USD' },
+    ];
 
-      {isActive && (
-        <View style={styles.priceContainer}>
-          <AppText variant="caption" weight="semiBold" style={[{ color: theme.text }, styles.priceLabel]}>
-            {type === 'sale' ? 'Expected Sale Price' : 'Monthly Rent'}
-          </AppText>
-          <View style={[styles.priceInputWrapper, { backgroundColor: theme.background, borderColor: theme.border }]}>
-            <AppText weight="bold" style={[{ color: theme.subtext }, styles.currency]}>Rs</AppText>
-            <TextInput
-              style={[styles.input, { color: theme.text }]}
-              value={priceValue ? String(priceValue) : ''}
-              onChangeText={(t) => setFieldValue(priceField, t)}
-              keyboardType="numeric"
-              placeholder={placeholder}
-              placeholderTextColor={theme.subtext}
-            />
+    return (
+      <View style={[
+        styles.optionCard, 
+        { backgroundColor: theme.card, borderColor: isActive ? theme.primary : theme.border },
+        isActive && { backgroundColor: theme.primary + '05' }
+      ]}>
+        <View style={styles.optionHeader}>
+          <View style={styles.optionInfo}>
+            <View style={[styles.typeIcon, { backgroundColor: isActive ? theme.primary + '15' : theme.border + '30' }]}>
+              <MaterialCommunityIcons 
+                name={type === 'sale' ? 'tag-outline' : 'calendar-clock-outline'} 
+                size={24} 
+                color={isActive ? theme.primary : theme.subtext} 
+              />
+            </View>
+            <View>
+              <AppText weight="bold" style={[{ color: theme.text }, styles.optionLabel]}>{label}</AppText>
+              <AppText variant="tiny" weight="medium" style={[{ color: theme.subtext }, styles.optionSub]}>
+                {isActive ? 'Currently active' : 'Tap to enable'}
+              </AppText>
+            </View>
           </View>
-          {renderError(priceField)}
+          <Switch
+            value={isActive}
+            onValueChange={onToggle}
+            trackColor={{ true: theme.primary, false: theme.border }}
+            thumbColor={Platform.OS === 'ios' ? undefined : (isActive ? '#fff' : '#f4f3f4')}
+          />
         </View>
-      )}
-    </View>
-  );
+
+        {isActive && (
+          <View style={styles.priceContainer}>
+            <AppText variant="caption" weight="semiBold" style={[{ color: theme.text }, styles.priceLabel]}>
+              {type === 'sale' ? 'Expected Sale Price' : 'Monthly Rent'}
+            </AppText>
+            <View style={styles.inputRow}>
+              <View style={[styles.priceInputWrapper, { backgroundColor: theme.background, borderColor: theme.border }]}>
+                <TextInput
+                  style={[styles.input, { color: theme.text }]}
+                  value={priceValue ? String(priceValue) : ''}
+                  onChangeText={(t) => setFieldValue(priceField, t)}
+                  keyboardType="numeric"
+                  placeholder={placeholder}
+                  placeholderTextColor={theme.subtext}
+                />
+              </View>
+              <View style={[styles.currencySelector, { backgroundColor: theme.background, borderColor: theme.border }]}>
+                {currencies.map((curr) => (
+                  <TouchableOpacity
+                    key={curr.value}
+                    style={[
+                      styles.currencyOption,
+                      currencyValue === curr.value && { backgroundColor: theme.primary }
+                    ]}
+                    onPress={() => setFieldValue(currencyField, curr.value)}
+                  >
+                    <AppText 
+                      variant="tiny" 
+                      weight="bold" 
+                      style={{ color: currencyValue === curr.value ? '#fff' : theme.subtext }}
+                    >
+                      {curr.label}
+                    </AppText>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+            {renderError(priceField)}
+            {renderError(currencyField)}
+          </View>
+        )}
+      </View>
+    );
+  };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
@@ -82,6 +111,8 @@ const StepPricing = () => {
         onToggle={(v: boolean) => setFieldValue('is_available_for_sale', v)}
         priceValue={values.sale_price}
         priceField="sale_price"
+        currencyValue={values.sale_currency}
+        currencyField="sale_currency"
         placeholder="e.g. 15,000,000"
       />
 
@@ -92,6 +123,8 @@ const StepPricing = () => {
         onToggle={(v: boolean) => setFieldValue('is_available_for_rent', v)}
         priceValue={values.rent_price}
         priceField="rent_price"
+        currencyValue={values.rent_currency}
+        currencyField="rent_currency"
         placeholder="e.g. 45,000"
       />
 
@@ -162,7 +195,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginLeft: 4,
   },
+  inputRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
   priceInputWrapper: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1.5,
@@ -170,8 +208,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     height: 56,
   },
-  currency: { 
-    marginRight: 10,
+  currencySelector: {
+    flexDirection: 'row',
+    borderWidth: 1.5,
+    borderRadius: 16,
+    padding: 4,
+    height: 56,
+    width: 100,
+    alignItems: 'center',
+  },
+  currencyOption: {
+    flex: 1,
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 12,
   },
   input: { 
     flex: 1, 

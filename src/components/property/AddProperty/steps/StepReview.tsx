@@ -53,6 +53,7 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
       </AppText>
 
       <ReviewSection title="Type & Agent" stepIndex={0}>
+        <InfoRow label="Property Category" value={values.property_category} icon="shape-outline" />
         <InfoRow label="Property Type" value={values.property_type} icon="home-city-outline" />
         <InfoRow label="Purpose" value={values.purpose} icon="tag-outline" />
         <InfoRow label="Agent" value={agent?.full_name || 'Direct Listing'} icon="account-tie-outline" />
@@ -83,10 +84,10 @@ const StepReview = ({ onEditStep }: StepReviewProps) => {
 
       <ReviewSection title="Pricing" stepIndex={3}>
         {values.is_available_for_sale && (
-          <InfoRow label="Sale Price" value={`Rs ${values.sale_price}`} />
+          <InfoRow label="Sale Price" value={`${values.sale_currency === 'USD' ? '$' : ''}${values.sale_price}${values.sale_currency === 'AF' ? ' AF' : ''}`} />
         )}
         {values.is_available_for_rent && (
-          <InfoRow label="Rent Price" value={`Rs ${values.rent_price} / month`} />
+          <InfoRow label="Rent Price" value={`${values.rent_currency === 'USD' ? '$' : ''}${values.rent_price}${values.rent_currency === 'AF' ? ' AF' : ''} / month`} />
         )}
       </ReviewSection>
 

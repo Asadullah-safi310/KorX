@@ -72,6 +72,8 @@ const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, se
         province_id: values.province_id ? Number(values.province_id) : null,
         district_id: values.district_id ? Number(values.district_id) : null,
         area_id: values.area_id ? Number(values.area_id) : null,
+        owner_person_id: values.owner_person_id ? Number(values.owner_person_id) : null,
+        agent_id: values.agent_id ? Number(values.agent_id) : null,
       };
 
       let id = propertyId;
