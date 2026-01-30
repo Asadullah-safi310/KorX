@@ -257,7 +257,7 @@ const UserDashboard = observer(() => {
     <View style={styles.bannerItem}>
       <Image source={{ uri: item }} style={styles.bannerImage} contentFit="cover" />
       <View style={styles.bannerOverlay}>
-        <AppText weight="bold" style={styles.bannerText}>#KabTak{"\n"}Puchoge</AppText>
+        <AppText weight="bold" style={styles.bannerText}></AppText>
       </View>
     </View>
   );
