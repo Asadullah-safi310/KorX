@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions, RefreshControl } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import authStore from '../../../stores/AuthStore';
 import propertyStore from '../../../stores/PropertyStore';
@@ -167,7 +167,7 @@ const ProfileScreen = observer(() => {
             onPress={() => router.push(isAgent ? '/deal/create' : '/(tabs)/properties')}
           >
             <View style={styles.btnIcon}>
-              <Ionicons name={isAgent ? "handshake-outline" : "search"} size={18} color={themeColors.card} />
+              <MaterialCommunityIcons name={isAgent ? "handshake" : "search"} size={18} color={themeColors.card} />
             </View>
             <Text style={[styles.quickActionLabel, { color: themeColors.card }]}>{isAgent ? 'New Transaction' : 'Discover'}</Text>
           </TouchableOpacity>
@@ -209,9 +209,18 @@ const ProfileScreen = observer(() => {
             onPress={() => router.push('/profile/my-properties')} 
             theme={themeColors}
           />
+          {(isAgent || isAdmin) && (
+            <MenuLink 
+              icon="business-outline" 
+              title="My Apartments" 
+              onPress={() => router.push('/profile/apartments')} 
+              theme={themeColors}
+            />
+          )}
           {isAgent && (
             <MenuLink 
-              icon="handshake-outline" 
+              icon="handshake" 
+              iconFamily="MaterialCommunityIcons"
               title="Transaction History" 
               onPress={() => router.push('/deal')} 
               theme={themeColors}
@@ -254,13 +263,17 @@ const ProfileScreen = observer(() => {
   );
 });
 
-const MenuLink = ({ icon, title, onPress, theme, isLast }: any) => (
+const MenuLink = ({ icon, iconFamily = 'Ionicons', title, onPress, theme, isLast }: any) => (
   <TouchableOpacity 
     style={[styles.menuLink, !isLast && { borderBottomColor: theme.border, borderBottomWidth: 1 }]} 
     onPress={onPress}
   >
     <View style={[styles.menuIconBox, { backgroundColor: theme.background }]}>
-      <Ionicons name={icon} size={20} color={theme.primary} />
+      {iconFamily === 'Ionicons' ? (
+        <Ionicons name={icon} size={20} color={theme.primary} />
+      ) : (
+        <MaterialCommunityIcons name={icon} size={20} color={theme.primary} />
+      )}
     </View>
     <Text style={[styles.menuLinkText, { color: theme.text }]}>{title}</Text>
     <Ionicons name="chevron-forward" size={18} color={theme.border} />

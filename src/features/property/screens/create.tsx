@@ -8,10 +8,14 @@ import propertyStore from '../../../stores/PropertyStore';
 import { useThemeColor } from '../../../hooks/useThemeColor';
 import AddPropertyWizard from '../../../components/property/AddProperty/AddPropertyWizard';
 
+import apartmentService from '../../../services/apartment.service';
+
 const PropertyCreateScreen = observer(() => {
   const router = useRouter();
-  const { id } = useLocalSearchParams();
+  const { id, parentId, apartmentId } = useLocalSearchParams();
   const isEditing = Boolean(id);
+  const isAddingChild = Boolean(parentId);
+  const isAddingToApartment = Boolean(apartmentId);
 
   const theme = useThemeColor();
   const background = theme.background;
@@ -20,7 +24,7 @@ const PropertyCreateScreen = observer(() => {
   const isLoading = authStore.isLoading;
   const isAuthenticated = authStore.isAuthenticated;
 
-  const [initialLoading, setInitialLoading] = useState(isEditing);
+  const [initialLoading, setInitialLoading] = useState(isEditing || isAddingChild || isAddingToApartment);
   const [initialValues, setInitialValues] = useState<any>(null);
 
   const fetchPropertyData = useCallback(async () => {
@@ -64,6 +68,12 @@ const PropertyCreateScreen = observer(() => {
               : (typeof property.amenities === 'string' && property.amenities.startsWith('[')
                   ? JSON.parse(property.amenities) 
                   : []),
+            is_parent: !!property.is_parent,
+            parent_property_id: property.parent_property_id,
+            apartment_id: property.apartment_id,
+            unit_number: property.unit_number || '',
+            floor: property.floor || '',
+            unit_type: property.unit_type || '',
           });
         }
       } catch {
@@ -72,8 +82,94 @@ const PropertyCreateScreen = observer(() => {
       } finally {
         setInitialLoading(false);
       }
+    } else if (isAddingChild) {
+      try {
+        setInitialLoading(true);
+        const parent = await propertyStore.fetchPropertyById(parentId as string);
+        if (parent) {
+          setInitialValues({
+            agent_id: String(parent.agent_id || ''),
+            property_type: parent.property_type === 'Market' ? 'Shop' : 'Apartment',
+            purpose: parent.purpose || 'SALE',
+            province_id: parent.province_id ? String(parent.province_id) : '',
+            district_id: parent.district_id ? String(parent.district_id) : '',
+            area_id: parent.area_id ? String(parent.area_id) : '',
+            location: parent.location || parent.address || '',
+            latitude: parent.latitude ? Number(parent.latitude) : null,
+            longitude: parent.longitude ? Number(parent.longitude) : null,
+            is_parent: false,
+            parent_property_id: Number(parentId),
+            property_category: parent.property_type === 'Market' ? 'Market' : 'Apartment',
+            media: [],
+            existingMedia: [],
+            title: '',
+            description: '',
+            area_size: '',
+            bedrooms: 0,
+            bathrooms: 0,
+            amenities: [],
+            is_available_for_sale: true,
+            is_available_for_rent: false,
+            sale_currency: 'AF',
+            rent_currency: 'AF',
+          });
+        }
+      } catch {
+        Alert.alert('Error', 'Failed to load parent property data');
+        router.back();
+      } finally {
+        setInitialLoading(false);
+      }
+    } else if (isAddingToApartment) {
+      try {
+        setInitialLoading(true);
+        const apartment = await apartmentService.getApartmentById(Number(apartmentId));
+        if (apartment) {
+          // Map apartment facilities to property amenities
+          const inheritedAmenities: string[] = [];
+          if (apartment.facilities) {
+            if (apartment.facilities.lift) inheritedAmenities.push('Lift');
+            if (apartment.facilities.parking) inheritedAmenities.push('Parking');
+            if (apartment.facilities.generator) inheritedAmenities.push('Generator Facility');
+            if (apartment.facilities.security) inheritedAmenities.push('Security Guard');
+            if (apartment.facilities.solar) inheritedAmenities.push('Solar Facility');
+          }
+
+          setInitialValues({
+            agent_id: String(authStore.user?.user_id || ''),
+            property_category: 'Apartment',
+            property_type: 'APARTMENT_UNIT',
+            purpose: 'SALE',
+            province_id: apartment.province_id ? String(apartment.province_id) : '',
+            district_id: apartment.district_id ? String(apartment.district_id) : '',
+            area_id: apartment.area_id ? String(apartment.area_id) : '',
+            location: apartment.address || '',
+            latitude: apartment.latitude ? Number(apartment.latitude) : null,
+            longitude: apartment.longitude ? Number(apartment.longitude) : null,
+            is_parent: false,
+            apartment_id: Number(apartmentId),
+            amenities: inheritedAmenities,
+            media: [],
+            existingMedia: [],
+            title: '',
+            description: '',
+            area_size: '',
+            bedrooms: 0,
+            bathrooms: 0,
+            is_available_for_sale: true,
+            is_available_for_rent: false,
+            sale_currency: 'AF',
+            rent_currency: 'AF',
+          });
+        }
+      } catch {
+        Alert.alert('Error', 'Failed to load apartment data');
+        router.back();
+      } finally {
+        setInitialLoading(false);
+      }
     }
-  }, [id, isEditing, router, isLoading, isAuthenticated]);
+  }, [id, parentId, apartmentId, isEditing, isAddingChild, isAddingToApartment, router, isLoading, isAuthenticated]);
 
   useEffect(() => {
     fetchPropertyData();

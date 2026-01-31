@@ -95,7 +95,15 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
   const isSale = property.is_available_for_sale || property.purpose === 'SALE' || property.purpose === 'BOTH';
   const isRent = property.is_available_for_rent || property.purpose === 'RENT' || property.purpose === 'BOTH';
   
-  const propertyTitle = property.title || property.property_type || 'Modern Living Space';
+  let propertyTitle = property.title || property.property_type || 'Modern Living Space';
+  if (property.parent_property_id) {
+    if (property.unit_number && property.floor) {
+      propertyTitle = `${property.property_type} ${property.unit_number} (Floor ${property.floor})`;
+    } else if (property.unit_number) {
+      propertyTitle = `${property.property_type} ${property.unit_number}`;
+    }
+  }
+
   const addressCandidates = [
     property.city,
     property.DistrictData?.name || property.district,
@@ -220,7 +228,7 @@ const PropertyCard = observer(({ property, onPress, index = 0, variant = 'defaul
           <View style={styles.compactBody}>
             <View style={styles.compactHeaderRow}>
               <AppText variant="body" weight="bold" numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
-                {locationLabel}
+                {property.parent_property_id && property.unit_number ? `Unit ${property.unit_number}` : locationLabel}
               </AppText>
               <View style={[styles.compactTypeBadge, { backgroundColor: themeColors.background }]}> 
                 <AppText variant="caption" weight="bold" color={themeColors.subtext} numberOfLines={1}>

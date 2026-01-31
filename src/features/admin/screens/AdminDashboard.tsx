@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
 import ScreenLayout from '../../../components/ScreenLayout';
@@ -93,7 +93,8 @@ const AdminDashboard = observer(() => {
           <AdminStatCard 
             title="Total Deals" 
             value={stats?.totalDeals || 0} 
-            icon="handshake-outline" 
+            icon="handshake" 
+            iconFamily="MaterialCommunityIcons"
             color="#8b5cf6" 
             onPress={() => router.push('/admin/deals')}
           />

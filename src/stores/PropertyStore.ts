@@ -233,6 +233,34 @@ class PropertyStore {
       throw error;
     }
   };
+
+  fetchPropertyChildren = async (id: string | number) => {
+    runInAction(() => {
+      this.loading = true;
+    });
+    try {
+      const response = await propertyService.getPropertyChildren(id);
+      runInAction(() => {
+        this.loading = false;
+      });
+      return response.data;
+    } catch (error: any) {
+      runInAction(() => {
+        this.error = error.message;
+        this.loading = false;
+      });
+      throw error;
+    }
+  };
+
+  addChildProperty = async (id: string | number, childData: any) => {
+    try {
+      const response = await propertyService.addChildProperty(id, childData);
+      return response.data;
+    } catch (error: any) {
+      throw error;
+    }
+  };
 }
 
 const propertyStore = new PropertyStore();

@@ -29,17 +29,17 @@ import { useThemeColor } from '../../../hooks/useThemeColor';
 import propertyStore from '../../../stores/PropertyStore';
 
 
-const steps = [
+const ALL_STEPS = [
   { title: 'Owner & Type', component: StepOwnership },
   { title: 'Basic Info', component: StepDetails },
-  { title: 'Location', component: StepLocation },
+  { title: 'Location', component: StepLocation, key: 'location' },
   { title: 'Pricing', component: StepPricing },
   { title: 'Media', component: StepMedia },
-  { title: 'Amenities', component: StepAmenities },
+  { title: 'Amenities', component: StepAmenities, key: 'amenities' },
   { title: 'Final Review', component: StepReview },
 ];
 
-const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, setCurrentStep }: any) => {
+const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, setCurrentStep, steps }: any) => {
   const theme = useThemeColor();
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -74,6 +74,7 @@ const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, se
         area_id: values.area_id ? Number(values.area_id) : null,
         owner_person_id: values.owner_person_id ? Number(values.owner_person_id) : null,
         agent_id: values.agent_id ? Number(values.agent_id) : null,
+        apartment_id: values.apartment_id ? Number(values.apartment_id) : null,
       };
 
       let id = propertyId;
@@ -85,7 +86,7 @@ const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, se
       }
 
       // Handle Media Upload
-      if (values.media.length > 0) {
+      if (values.media && values.media.length > 0) {
         const formData = new FormData();
         values.media.forEach((file: any) => {
           formData.append('files', {
@@ -100,7 +101,7 @@ const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, se
       // Handle existing media deletion
       if (isEditing && formInitialValues.existingMedia) {
         const initialMedia = formInitialValues.existingMedia;
-        const currentMedia = values.existingMedia;
+        const currentMedia = values.existingMedia || [];
         
         const deletedMedia = initialMedia.filter((initial: any) => 
           !currentMedia.some((current: any) => current.url === initial.url)
@@ -235,11 +236,22 @@ const WizardInner = observer(({ onFinish, isEditing, propertyId, currentStep, se
 
 const AddPropertyWizard = ({ initial, isEditing, propertyId, onFinish }: any) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const activeSchema = stepSchemas[currentStep];
+  
+  const values = initial || initialValues;
+  const isInherited = values.parent_property_id != null || values.apartment_id != null;
+  
+  const steps = ALL_STEPS.filter(step => {
+    if (isInherited && (step.key === 'location' || step.key === 'amenities')) {
+      return false;
+    }
+    return true;
+  });
+
+  const activeSchema = stepSchemas[ALL_STEPS.indexOf(steps[currentStep])];
   
   return (
     <Formik
-      initialValues={initial || initialValues}
+      initialValues={values}
       validationSchema={activeSchema}
       enableReinitialize={true}
       onSubmit={() => {}}
@@ -250,6 +262,7 @@ const AddPropertyWizard = ({ initial, isEditing, propertyId, onFinish }: any) =>
         onFinish={onFinish} 
         currentStep={currentStep}
         setCurrentStep={setCurrentStep}
+        steps={steps}
       />
     </Formik>
   );

@@ -10,6 +10,7 @@ import propertyStore from '../../../stores/PropertyStore';
 import authStore from '../../../stores/AuthStore';
 import favoriteStore from '../../../stores/FavoriteStore';
 import Avatar from '../../../components/Avatar';
+import PropertyCard from '../../../components/PropertyCard';
 import { getImageUrl } from '../../../utils/mediaUtils';
 import { shareProperty } from '../../../utils/shareUtils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -182,7 +183,9 @@ const PropertyDetailsScreen = observer(() => {
   const insets = useSafeAreaInsets();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [property, setProperty] = useState<any>(null);
+  const [children, setChildren] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingChildren, setLoadingChildren] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [viewerVisible, setViewerVisible] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
@@ -272,11 +275,27 @@ const PropertyDetailsScreen = observer(() => {
       try {
         const response = await propertyService.getPropertyById(id as string);
         setProperty(response.data);
+        
+        if (response.data.is_parent) {
+          fetchChildren(id as string);
+        }
       } catch (err: any) {
         setError('Failed to load property details');
         console.error(err);
       } finally {
         setLoading(false);
+      }
+    };
+
+    const fetchChildren = async (parentId: string) => {
+      try {
+        setLoadingChildren(true);
+        const response = await propertyService.getPropertyChildren(parentId);
+        setChildren(response.data);
+      } catch (err) {
+        console.error('Failed to load child units:', err);
+      } finally {
+        setLoadingChildren(false);
       }
     };
 
@@ -472,7 +491,9 @@ const PropertyDetailsScreen = observer(() => {
             <View style={styles.titleFavoriteRow}>
               <View style={{ flex: 1 }}>
                 <AppText variant="h1" weight="bold" color={theme.text} style={styles.propertyTitle}>
-                  {property.title || `${property.bedrooms || ''} Bed ${property.property_type}`}
+                  {property.parent_property_id && property.unit_number
+                    ? `${property.property_type} ${property.unit_number}${property.floor ? ` (Floor ${property.floor})` : ''}`
+                    : (property.title || `${property.bedrooms || ''} Bed ${property.property_type}`)}
                 </AppText>
               </View>
               <TouchableOpacity 
@@ -495,6 +516,33 @@ const PropertyDetailsScreen = observer(() => {
                 <AppText variant="body" weight="bold" color={theme.text} style={{ marginLeft: 4 }}>3.7</AppText>
               </View>
             </View>
+
+            {/* Parent Building or Apartment Link */}
+            {property.Parent ? (
+              <TouchableOpacity 
+                style={[styles.parentLink, { backgroundColor: theme.card, borderColor: theme.border }]}
+                onPress={() => router.push(`/property/${property.Parent.property_id}`)}
+              >
+                <Ionicons name="business-outline" size={20} color={primaryColor} />
+                <View style={{ marginLeft: 12, flex: 1 }}>
+                  <AppText variant="small" color={theme.subtext}>Located in</AppText>
+                  <AppText variant="body" weight="bold" color={theme.text}>{property.Parent.title || property.Parent.property_type}</AppText>
+                </View>
+                <Ionicons name="chevron-forward" size={18} color={theme.subtext} />
+              </TouchableOpacity>
+            ) : property.Apartment ? (
+              <TouchableOpacity 
+                style={[styles.parentLink, { backgroundColor: theme.card, borderColor: theme.border }]}
+                onPress={() => router.push(`/apartment/${property.Apartment.id}`)}
+              >
+                <Ionicons name="office-building" size={20} color={primaryColor} />
+                <View style={{ marginLeft: 12, flex: 1 }}>
+                  <AppText variant="small" color={theme.subtext}>Located in Apartment</AppText>
+                  <AppText variant="body" weight="bold" color={theme.text}>{property.Apartment.apartment_name}</AppText>
+                </View>
+                <Ionicons name="chevron-forward" size={18} color={theme.subtext} />
+              </TouchableOpacity>
+            ) : null}
           </View>
 
           {/* Floating Agent & Features Card */}
@@ -567,6 +615,43 @@ const PropertyDetailsScreen = observer(() => {
               {property.description || 'Step into comfort and style with this spacious property featuring an open-concept living area and high-quality finishes.'}
             </AppText>
           </View>
+
+          {/* Child Units Section */}
+          {property.is_parent && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeaderRow}>
+                <AppText variant="title" weight="bold" color={theme.text} style={styles.sectionTitle}>Homes Available in This Apartment</AppText>
+                {canEdit && (
+                  <TouchableOpacity 
+                    style={[styles.addUnitBtn, { borderColor: primaryColor }]}
+                    onPress={() => router.push(`/property/create?parentId=${property.property_id}`)}
+                  >
+                    <Ionicons name="add" size={16} color={primaryColor} />
+                    <AppText variant="small" weight="bold" color={primaryColor}>Add Unit</AppText>
+                  </TouchableOpacity>
+                )}
+              </View>
+              
+              {loadingChildren ? (
+                <ActivityIndicator size="small" color={primaryColor} style={{ marginVertical: 20 }} />
+              ) : children.length > 0 ? (
+                <View style={styles.childrenList}>
+                  {children.map((child, index) => (
+                    <PropertyCard 
+                      key={child.property_id}
+                      property={child}
+                      index={index}
+                      onPress={() => router.push(`/property/${child.property_id}`)}
+                    />
+                  ))}
+                </View>
+              ) : (
+                <View style={[styles.emptyChildren, { backgroundColor: theme.card }]}>
+                  <AppText variant="small" color={theme.subtext}>No homes available yet</AppText>
+                </View>
+              )}
+            </View>
+          )}
 
           {/* Amenities Grid */}
           {(() => {
@@ -1173,6 +1258,56 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
+  },
+  parentLink: {
+    marginTop: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  addUnitBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 4,
+  },
+  childrenList: {
+    gap: 12,
+  },
+  childItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  childImageWrapper: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    overflow: 'hidden',
+    marginRight: 12,
+  },
+  childImage: {
+    width: '100%',
+    height: '100%',
+  },
+  childInfo: {
+    flex: 1,
+  },
+  emptyChildren: {
+    padding: 20,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.1)',
   },
 });
 

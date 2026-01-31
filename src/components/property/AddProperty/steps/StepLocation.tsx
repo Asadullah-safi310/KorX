@@ -50,6 +50,21 @@ const StepLocation = () => {
   };
 
   const isMapAvailable = Platform.OS !== 'web' && MapView;
+  const isInherited = values.parent_property_id || values.apartment_id;
+
+  if (isInherited) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', paddingTop: 100 }]}>
+        <View style={[styles.placeholderIcon, { backgroundColor: theme.primary + '10' }]}>
+          <MaterialCommunityIcons name="map-marker-check-outline" size={48} color={theme.primary} />
+        </View>
+        <AppText variant="h2" weight="bold" style={{ color: theme.text, textAlign: 'center' }}>Location Inherited</AppText>
+        <AppText variant="body" style={[{ color: theme.subtext, textAlign: 'center', marginTop: 10 }]}>
+          This unit will inherit the location from its parent {values.apartment_id ? 'Apartment' : values.property_category}. You don't need to set it manually.
+        </AppText>
+      </View>
+    );
+  }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">

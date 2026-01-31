@@ -55,7 +55,7 @@ export default observer(function TabLayout() {
       <Tabs.Screen
         name="create-property"
         options={{
-          title: 'Sell/Rent',
+          title: 'Add',
           tabBarIcon: ({ color }) => (
             <View style={styles.fabContainer}>
               <View style={[styles.fab, { backgroundColor: themeColors.primary }]}>

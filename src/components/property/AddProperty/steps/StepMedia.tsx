@@ -41,9 +41,11 @@ const StepMedia = () => {
         allowsMultipleSelection: true,
         quality: 0.8,
       });
+      
+      const currentMedia = Array.isArray(values.media) ? values.media : [];
 
       if (!result.canceled) {
-        const newMedia = [...values.media];
+        const newMedia = [...currentMedia];
         for (const asset of result.assets) {
           const isValidSize = await validateFileSize(asset.uri, 10);
           if (!isValidSize) {
@@ -82,8 +84,9 @@ const StepMedia = () => {
           return;
         }
 
+        const currentMedia = Array.isArray(values.media) ? values.media : [];
         const type = getFileTypeCategory(asset.name, asset.mimeType);
-        const newMedia = [...values.media, {
+        const newMedia = [...currentMedia, {
           uri: asset.uri,
           name: asset.name,
           mimeType: asset.mimeType,
@@ -109,7 +112,8 @@ const StepMedia = () => {
                     text: 'Remove', 
                     style: 'destructive', 
                     onPress: () => {
-                        const existing = [...values.existingMedia];
+                        const currentExisting = Array.isArray(values.existingMedia) ? values.existingMedia : [];
+                        const existing = [...currentExisting];
                         existing.splice(index, 1);
                         setFieldValue('existingMedia', existing);
                     } 
@@ -117,7 +121,8 @@ const StepMedia = () => {
             ]
         );
     } else {
-        const newMedia = [...values.media];
+        const currentMedia = Array.isArray(values.media) ? values.media : [];
+        const newMedia = [...currentMedia];
         newMedia.splice(index, 1);
         setFieldValue('media', newMedia);
     }
@@ -208,7 +213,7 @@ const StepMedia = () => {
 
       <View style={styles.mediaGrid}>
         {values.existingMedia?.map((item: any, index: number) => renderMediaItem(item, index, true))}
-        {values.media.map((item: any, index: number) => renderMediaItem(item, index, false))}
+        {values.media?.map((item: any, index: number) => renderMediaItem(item, index, false))}
         
         {(!values.existingMedia?.length && !values.media?.length) && (
           <View style={[styles.emptyGrid, { backgroundColor: theme.border + '10' }]}>

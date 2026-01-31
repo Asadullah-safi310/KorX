@@ -1,18 +1,19 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { AppText } from '../../../components/AppText';
 import { useThemeColor } from '../../../hooks/useThemeColor';
 
 interface AdminStatCardProps {
   title: string;
   value: string | number;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: any;
+  iconFamily?: 'Ionicons' | 'MaterialCommunityIcons';
   color: string;
   onPress?: () => void;
 }
 
-const AdminStatCard = ({ title, value, icon, color, onPress }: AdminStatCardProps) => {
+const AdminStatCard = ({ title, value, icon, iconFamily = 'Ionicons', color, onPress }: AdminStatCardProps) => {
   const themeColors = useThemeColor();
 
   return (
@@ -22,7 +23,11 @@ const AdminStatCard = ({ title, value, icon, color, onPress }: AdminStatCardProp
       disabled={!onPress}
     >
       <View style={[styles.iconContainer, { backgroundColor: color + '20' }]}>
-        <Ionicons name={icon} size={24} color={color} />
+        {iconFamily === 'Ionicons' ? (
+          <Ionicons name={icon} size={24} color={color} />
+        ) : (
+          <MaterialCommunityIcons name={icon} size={24} color={color} />
+        )}
       </View>
       <View style={styles.textContainer}>
         <AppText variant="h3" weight="bold">{value}</AppText>

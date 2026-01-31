@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
 import ScreenLayout from '../../../components/ScreenLayout';
@@ -52,7 +52,7 @@ const AgentManagement = observer(() => {
               <AppText variant="tiny" weight="bold" style={{ marginLeft: 4 }}>{item.property_count || 0} Properties</AppText>
             </View>
             <View style={styles.statItem}>
-              <Ionicons name="handshake-outline" size={14} color="#10b981" />
+              <MaterialCommunityIcons name="handshake" size={14} color="#10b981" />
               <AppText variant="tiny" weight="bold" style={{ marginLeft: 4 }}>{item.deal_count || 0} Deals</AppText>
             </View>
             <View style={styles.statItem}>
@@ -78,7 +78,7 @@ const AgentManagement = observer(() => {
           style={styles.actionBtn}
           onPress={() => router.push(`/admin/deals?agent_id=${item.user_id}`)}
         >
-          <Ionicons name="handshake-outline" size={16} color="#10b981" />
+          <MaterialCommunityIcons name="handshake" size={16} color="#10b981" />
           <AppText variant="tiny" weight="bold" color="#10b981" style={{ marginLeft: 4 }}>Deals</AppText>
         </TouchableOpacity>
         <TouchableOpacity 

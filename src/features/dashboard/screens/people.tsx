@@ -56,22 +56,22 @@ const PeopleScreen = observer(() => {
     >
       <View style={[styles.premiumHeader, { paddingTop: insets.top + 10 }]}>
         <Text style={[styles.premiumTitle, { color: themeColors.text }]}>People Directory</Text>
-        <Text style={[styles.premiumSubtitle, { color: themeColors.subtext }]}>Manage your network and active agents</Text>
+        <Text style={[styles.premiumSubtitle, { color: themeColors.white }]}>Manage your network and active agents</Text>
       </View>
 
       <View style={styles.premiumSearchSection}>
-        <View style={[styles.premiumSearchBar, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
-          <Ionicons name="search-outline" size={20} color={themeColors.subtext} />
+        <View style={[styles.premiumSearchBar, { backgroundColor: themeColors.white, borderColor: themeColors.border }]}>
+          <Ionicons name="search-outline" size={20} color={themeColors.white} />
           <TextInput
             style={[styles.premiumSearchInput, { color: themeColors.text }]}
             placeholder={`Search ${activeTab}...`}
-            placeholderTextColor={themeColors.subtext}
+            placeholderTextColor={themeColors.white}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
           {searchQuery ? (
             <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Ionicons name="close-circle" size={20} color={themeColors.subtext} />
+              <Ionicons name="close-circle" size={20} color={themeColors.white} />
             </TouchableOpacity>
           ) : null}
         </View>
@@ -81,7 +81,7 @@ const PeopleScreen = observer(() => {
         <TouchableOpacity
           style={[
             styles.premiumTab, 
-            { backgroundColor: themeColors.card, borderColor: themeColors.border },
+            { backgroundColor: themeColors.white, borderColor: themeColors.border },
             activeTab === 'contacts' && { backgroundColor: themeColors.primary, borderColor: themeColors.primary }
           ]}
           onPress={() => setActiveTab('contacts')}
@@ -95,7 +95,7 @@ const PeopleScreen = observer(() => {
         <TouchableOpacity
           style={[
             styles.premiumTab, 
-            { backgroundColor: themeColors.card, borderColor: themeColors.border },
+            { backgroundColor: themeColors.white, borderColor: themeColors.border },
             activeTab === 'agents' && { backgroundColor: themeColors.primary, borderColor: themeColors.primary }
           ]}
           onPress={() => setActiveTab('agents')}
@@ -121,11 +121,11 @@ const PeopleScreen = observer(() => {
           scrollEnabled={false}
           ListEmptyComponent={
             <View style={styles.center}>
-              <View style={[styles.emptyIconContainer, { backgroundColor: themeColors.card }]}>
-                <Ionicons name="people-outline" size={40} color={themeColors.subtext} />
+              <View style={[styles.emptyIconContainer, { backgroundColor: themeColors.white }]}>
+                <Ionicons name="people-outline" size={40} color={themeColors.white} />
               </View>
               <Text style={[styles.emptyText, { color: themeColors.text }]}>No {activeTab} found</Text>
-              <Text style={[styles.emptySubtext, { color: themeColors.subtext }]}>Try adjusting your search criteria</Text>
+              <Text style={[styles.emptySubtext, { color: themeColors.white }]}>Try adjusting your search criteria</Text>
             </View>
           }
         />

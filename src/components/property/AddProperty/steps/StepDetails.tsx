@@ -294,64 +294,78 @@ const StepDetails = () => {
 
       <View style={styles.divider} />
 
-      <AppText variant="h2" weight="bold" style={[{ color: theme.text }, { marginTop: 10 }]}>Location Information</AppText>
-      <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
-        Where is this property located?
-      </AppText>
+      {!(values.parent_property_id || values.apartment_id) ? (
+        <>
+          <AppText variant="h2" weight="bold" style={[{ color: theme.text }, { marginTop: 10 }]}>Location Information</AppText>
+          <AppText variant="caption" style={[{ color: theme.subtext }, styles.sectionSubtitle]}>
+            Where is this property located?
+          </AppText>
 
-      <Selector
-        label="Province / State"
-        value={values.province_id}
-        options={provinces}
-        onSelect={(id: string) => setFieldValue('province_id', id)}
-        placeholder="Select Province"
-        error={touched.province_id && errors.province_id}
-        loading={loadingProvinces}
-        icon="map-outline"
-      />
-
-      <View style={styles.row}>
-        <View style={{ flex: 1 }}>
           <Selector
-            label="District"
-            value={values.district_id}
-            options={districts}
-            onSelect={(id: string) => setFieldValue('district_id', id)}
-            placeholder="District"
-            error={touched.district_id && errors.district_id}
-            loading={loadingDistricts}
-            icon="business-outline"
+            label="Province / State"
+            value={values.province_id}
+            options={provinces}
+            onSelect={(id: string) => setFieldValue('province_id', id)}
+            placeholder="Select Province"
+            error={touched.province_id && errors.province_id}
+            loading={loadingProvinces}
+            icon="map-outline"
           />
-        </View>
-        <View style={{ width: 12 }} />
-        <View style={{ flex: 1 }}>
-          <Selector
-            label="Area / Sector"
-            value={values.area_id}
-            options={areas}
-            onSelect={(id: string) => setFieldValue('area_id', id)}
-            placeholder="Region"
-            error={touched.area_id && errors.area_id}
-            loading={loadingAreas}
-            icon="navigate-outline"
-          />
-        </View>
-      </View>
 
-      <View style={styles.inputGroup}>
-        <AppText variant="caption" weight="semiBold" style={{ color: theme.text }}>Exact Address</AppText>
-        <View style={[styles.textInputContainer, { backgroundColor: theme.card, borderColor: theme.border }]}>
-          <Ionicons name="location-outline" size={20} color={theme.subtext} style={styles.inputIcon} />
-          <TextInput
-            style={[styles.input, { color: theme.text }]}
-            value={values.location}
-            onChangeText={(t) => setFieldValue('location', t)}
-            placeholder="Street address, building name..."
-            placeholderTextColor={theme.subtext}
-          />
+          <View style={styles.row}>
+            <View style={{ flex: 1 }}>
+              <Selector
+                label="District"
+                value={values.district_id}
+                options={districts}
+                onSelect={(id: string) => setFieldValue('district_id', id)}
+                placeholder="District"
+                error={touched.district_id && errors.district_id}
+                loading={loadingDistricts}
+                icon="business-outline"
+              />
+            </View>
+            <View style={{ width: 12 }} />
+            <View style={{ flex: 1 }}>
+              <Selector
+                label="Area / Sector"
+                value={values.area_id}
+                options={areas}
+                onSelect={(id: string) => setFieldValue('area_id', id)}
+                placeholder="Region"
+                error={touched.area_id && errors.area_id}
+                loading={loadingAreas}
+                icon="navigate-outline"
+              />
+            </View>
+          </View>
+
+          <View style={styles.inputGroup}>
+            <AppText variant="caption" weight="semiBold" style={{ color: theme.text }}>Exact Address</AppText>
+            <View style={[styles.textInputContainer, { backgroundColor: theme.card, borderColor: theme.border }]}>
+              <Ionicons name="location-outline" size={20} color={theme.subtext} style={styles.inputIcon} />
+              <TextInput
+                style={[styles.input, { color: theme.text }]}
+                value={values.location}
+                onChangeText={(t) => setFieldValue('location', t)}
+                placeholder="Street address, building name..."
+                placeholderTextColor={theme.subtext}
+              />
+            </View>
+            {renderError('location')}
+          </View>
+        </>
+      ) : (
+        <View style={{ marginTop: 20 }}>
+          <AppText variant="h2" weight="bold" style={{ color: theme.text }}>Location</AppText>
+          <View style={[styles.tipBox, { backgroundColor: theme.primary + '08', borderColor: theme.primary + '20' }]}>
+            <Ionicons name="information-circle-outline" size={20} color={theme.primary} />
+            <AppText variant="caption" weight="medium" style={[{ color: theme.text }, { flex: 1, marginLeft: 10 }]}>
+              This unit inherits location from its parent {values.apartment_id ? 'apartment building' : 'property'}. Location fields are locked.
+            </AppText>
+          </View>
         </View>
-        {renderError('location')}
-      </View>
+      )}
     </ScrollView>
   );
 };
@@ -394,6 +408,15 @@ const styles = StyleSheet.create({
   textArea: {
     textAlignVertical: 'top',
     height: '100%',
+  },
+  tipBox: {
+    flexDirection: 'row',
+    padding: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginTop: 20,
+    gap: 12,
+    alignItems: 'center',
   },
   unitBadge: {
     paddingHorizontal: 10,

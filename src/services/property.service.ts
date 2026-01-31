@@ -46,5 +46,11 @@ export const propertyService = {
   },
   deleteProperty: async (id: string | number) => {
     return api.delete(`/properties/${id}`);
+  },
+  getPropertyChildren: async (id: string | number) => {
+    return api.get(`/properties/${id}/children`);
+  },
+  addChildProperty: async (id: string | number, childData: any) => {
+    return api.post(`/properties/${id}/children`, childData);
   }
 };

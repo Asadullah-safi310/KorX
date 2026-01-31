@@ -2,19 +2,19 @@ import * as Yup from 'yup';
 import { propertyBaseSchema } from '../../../validation/schemas';
 
 export const PROPERTY_CATEGORY_TYPES = {
-  Apartment: ["Office", "House"],
-  Sharak: ["Plot", "House", "Office"],
-  Normal: ["Plot", "House", "Office", "Shop", "Land", "Market"]
+  Apartment: ["APARTMENT_UNIT"],
+  Market: ["SHOP"],
+  Sharak: ["PLOT", "HOUSE", "OFFICE"],
+  Normal: ["HOUSE", "SHOP", "OFFICE", "LAND", "PLOT"]
 };
 
 export const PROPERTY_TYPES_CONFIG = [
-  { label: 'House', icon: 'home-variant-outline', activeIcon: 'home-variant' },
-  { label: 'Apartment', icon: 'office-building-marker-outline', activeIcon: 'office-building-marker' },
-  { label: 'Shop', icon: 'storefront-outline', activeIcon: 'storefront' },
-  { label: 'Office', icon: 'briefcase-variant-outline', activeIcon: 'briefcase-variant' },
-  { label: 'Land', icon: 'map-outline', activeIcon: 'map' },
-  { label: 'Plot', icon: 'border-all', activeIcon: 'border-all' },
-  { label: 'Market', icon: 'store-outline', activeIcon: 'store' },
+  { label: 'House', value: 'HOUSE', icon: 'home-variant-outline', activeIcon: 'home-variant' },
+  { label: 'Apartment Unit', value: 'APARTMENT_UNIT', icon: 'home-outline', activeIcon: 'home' },
+  { label: 'Shop', value: 'SHOP', icon: 'storefront-outline', activeIcon: 'storefront' },
+  { label: 'Office', value: 'OFFICE', icon: 'briefcase-variant-outline', activeIcon: 'briefcase-variant' },
+  { label: 'Land', value: 'LAND', icon: 'map-outline', activeIcon: 'map' },
+  { label: 'Plot', value: 'PLOT', icon: 'border-all', activeIcon: 'border-all' },
 ];
 
 export const initialValues = {
@@ -24,6 +24,12 @@ export const initialValues = {
   property_category: 'Normal',
   property_type: '',
   purpose: 'SALE',
+  is_parent: false,
+  parent_property_id: null,
+  apartment_id: null,
+  unit_number: '',
+  floor: '',
+  unit_type: '',
 
   // Step 2
   title: '',
@@ -59,18 +65,30 @@ export const initialValues = {
 export const Step1Schema = Yup.object().shape({
   owner_person_id: Yup.string().nullable(),
   agent_id: Yup.string().nullable(),
-  property_category: Yup.string().oneOf(['Apartment', 'Sharak', 'Normal']).required('Property category is required'),
+  property_category: Yup.string().oneOf(['Apartment', 'Sharak', 'Normal', 'Market']).required('Property category is required'),
   property_type: Yup.string().required('Property type is required').test(
     'is-valid-type',
     'Invalid property type for selected category',
     function (value) {
       const { property_category } = this.parent;
       if (!property_category || !value) return true;
+      if (property_category === 'Market') return ['Market', 'Shop'].includes(value);
       const allowedTypes = PROPERTY_CATEGORY_TYPES[property_category as keyof typeof PROPERTY_CATEGORY_TYPES];
       return allowedTypes?.includes(value);
     }
   ),
   purpose: Yup.string().oneOf(['SALE', 'RENT']).required('Purpose is required'),
+  parent_property_id: Yup.number().nullable(),
+  apartment_id: Yup.number().nullable().when('property_type', {
+    is: 'APARTMENT_UNIT',
+    then: (schema) => schema.required('Apartment building is required'),
+    otherwise: (schema) => schema.nullable(),
+  }),
+  unit_number: Yup.string().when(['parent_property_id', 'apartment_id'], {
+    is: (parentPropId: any, apartmentId: any) => parentPropId != null || apartmentId != null,
+    then: (schema) => schema.required('Unit number is required'),
+    otherwise: (schema) => schema.nullable(),
+  }),
 });
 
 export const Step2Schema = Yup.object().shape({

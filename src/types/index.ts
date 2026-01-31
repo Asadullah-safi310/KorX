@@ -45,6 +45,16 @@ export interface Property {
   is_photo_available: boolean;
   is_attachment_available: boolean;
   is_video_available: boolean;
+  is_parent: boolean;
+  parent_property_id: number | null;
+  Parent?: {
+    property_id: number;
+    title: string;
+    property_type: string;
+  };
+  unit_number: string | null;
+  floor: string | null;
+  unit_type: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
