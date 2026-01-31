@@ -218,6 +218,8 @@ const AdminDashboard = observer(() => {
   );
 });
 
+import ApartmentReelList from '../components/ApartmentReelList';
+
 const UserDashboard = observer(() => {
   const [refreshing, setRefreshing] = useState(false);
   const [activeBannerIndex, setActiveBannerIndex] = useState(0);
@@ -431,38 +433,8 @@ const UserDashboard = observer(() => {
         </ScrollView>
       </View>
 
-      {/* Featured Projects Section */}
-      <View style={styles.projectsSection}>
-        <View style={styles.sectionHeaderRow}>
-          <View>
-            <AppText variant="h2" weight="bold" color="#001f3f">Projects in High Demand</AppText>
-            <AppText variant="small" weight="medium" color={themeColors.subtext} style={{ marginTop: 4 }}>The most explored projects in India</AppText>
-          </View>
-        </View>
-        
-        {propertyStore.loading && propertyStore.publicProperties.length === 0 ? (
-          <View style={styles.premiumLoader}>
-            <ActivityIndicator size="small" color={themeColors.primary} />
-          </View>
-        ) : (
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false} 
-            contentContainerStyle={styles.projectsList}
-            snapToInterval={width * 0.75 + 20}
-            decelerationRate="fast"
-          >
-            {propertyStore.publicProperties.map((property, index) => (
-              <FeaturedProjectCard 
-                key={property.property_id}
-                property={property}
-                index={index}
-                onPress={() => router.push(`/property/${property.property_id}`)}
-              />
-            ))}
-          </ScrollView>
-        )}
-      </View>
+      {/* Project In High Demand Section (Apartments Reel) */}
+      <ApartmentReelList />
       
     </ScreenLayout>
   );
@@ -691,135 +663,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modernChipText: {
-  },
-  projectsSection: {
-    marginTop: 40,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  projectsTitle: {
-    letterSpacing: -0.8,
-    color: '#001f3f',
-  },
-  projectsSubtitle: {
-    marginTop: 4,
-    opacity: 0.7,
-  },
-  seeAllBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  seeAllText: {
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  projectsList: {
-    paddingRight: 20,
-    paddingVertical: 12,
-  },
-  featuredCard: {
-    width: width * 0.75,
-    marginRight: 20,
-    borderRadius: 20,
-    overflow: 'hidden',
-    backgroundColor: 'transparent',
-  },
-  cardImageContainer: {
-    height: 150,
-    position: 'relative',
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  featuredImage: {
-    width: '100%',
-    height: '100%',
-  },
-  cardTopTags: {
-    position: 'absolute',
-    top: 12,
-    left: 12,
-    flexDirection: 'row',
-    gap: 8,
-    zIndex: 2,
-    alignItems: 'center',
-  },
-  statusTag: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  availabilityDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#10b981',
-    borderWidth: 2,
-    borderColor: '#fff',
-  },
-  heartBtnSmall: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(0,0,0,0.25)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 2,
-  },
-  imageBottomOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 12,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.15)',
-  },
-  possessionTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    gap: 4,
-  },
-  possessionTextSmall: {
-    color: '#fff',
-  },
-  featuredInfo: {
-    padding: 16,
-  },
-  priceRowModern: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 2,
-  },
-  featuredPriceModern: {
-    letterSpacing: -0.5,
-  },
-  configBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  configText: {
-  },
-  featuredTitleModern: {
-    letterSpacing: -0.3,
-    marginBottom: 2,
-  },
-  locationRowModern: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  featuredLocationModern: {
   },
   premiumLoader: {
     height: 200,
